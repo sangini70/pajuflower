@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="예수 그리스도와 말씀을 중심으로 사람 곁에 있는 파주꽃동산교회 공식 홈페이지입니다." />
+    <meta name="theme-color" content="#183d35" />
+    <title>파주꽃동산교회 | 사람 곁에 있는 교회</title>
+    <style>
+      :root {
+        --ink: #183d35;
+        --ink-deep: #0f2b27;
+        --sage: #dfe9de;
+        --lime: #b9d34a;
+        --coral: #e67a61;
+        --cream: #f8f5ed;
+        --paper: #fffdf8;
+        --line: rgba(24, 61, 53, 0.16);
+        --muted: #64736e;
+        --shadow: 0 24px 70px rgba(24, 61, 53, 0.12);
+        --radius-lg: 28px;
+        --radius-md: 18px;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+      a { color: inherit; text-decoration: none; }
+      img { max-width: 100%; display: block; }
+      button { font: inherit; }
+      .skip-link { position: absolute; left: 1rem; top: -4rem; z-index: 20; padding: .7rem 1rem; background: var(--lime); color: var(--ink-deep); border-radius: 0 0 10px 10px; }
+      .skip-link:focus { top: 0; }
+      .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+      .eyebrow { margin: 0 0 12px; color: var(--coral); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1, h2, h3 { letter-spacing: -.045em; line-height: 1.13; }
+      h1 { margin-bottom: 24px; font-size: clamp(2.7rem, 8vw, 6.8rem); }
+      h2 { margin-bottom: 18px; font-size: clamp(2rem, 5vw, 4.4rem); }
+      h3 { margin-bottom: 10px; font-size: 1.35rem; }
+      .muted { color: var(--muted); }
+      .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px; border: 1px solid transparent; border-radius: 999px; font-weight: 800; transition: transform .2s ease, background .2s ease, color .2s ease; }
+      .btn:hover, .btn:focus-visible { transform: translateY(-2px); }
+      .btn-primary { background: var(--lime); color: var(--ink-deep); }
+      .btn-light { background: #fff; color: var(--ink); }
+      .btn-outline { border-color: currentColor; }
+      .section { padding: 96px 0; }
+      .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 38px; }
+      .section-heading p { max-width: 440px; margin-bottom: 4px; color: var(--muted); }
+
+      header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(24,61,53,.08); background: rgba(255,253,248,.9); backdrop-filter: blur(16px); }
+      .nav { display: flex; align-items: center; justify-content: space-between; min-height: 78px; gap: 20px; }
+      .brand img { width: 285px; height: auto; max-height: 46px; object-fit: contain; }
+      .nav-links { display: flex; align-items: center; gap: 22px; font-size: .92rem; font-weight: 700; }
+      .nav-links a:hover, .nav-links a:focus-visible { color: var(--coral); }
+      .menu-toggle { display: none; border: 0; background: transparent; color: var(--ink); font-size: 1.5rem; cursor: pointer; }
+
+      .hero { overflow: hidden; padding: 76px 0 92px; background: var(--ink); color: #fffdf8; }
+      .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 72px; }
+      .hero h1 span { color: var(--lime); }
+      .hero-title-line { display: block; white-space: nowrap; }
+      .hero-copy { max-width: 620px; color: rgba(255,253,248,.8); font-size: 1.12rem; }
+      .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+      .hero-art { overflow: hidden; aspect-ratio: 3 / 2; border-radius: var(--radius-lg); background: #193f35; box-shadow: 0 25px 80px rgba(0,0,0,.25); }
+      .hero-art img { width: 100%; height: 100%; object-fit: contain; }
+
+      .welcome { background: var(--cream); }
+      .welcome-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 72px; align-items: start; }
+      .welcome-copy { font-size: clamp(1.4rem, 3vw, 2.3rem); letter-spacing: -.04em; line-height: 1.4; }
+      .welcome-copy em { color: var(--coral); font-style: normal; }
+      .notice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; }
+      .notice-card { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255,255,255,.66); }
+      .notice-card strong { display: block; margin-bottom: 7px; font-size: 1.1rem; }
+
+      .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .intro-card { min-height: 330px; padding: 34px; border-radius: var(--radius-lg); background: var(--sage); }
+      .intro-card.dark { display: flex; flex-direction: column; justify-content: end; background: var(--ink); color: #fff; }
+      .intro-card.dark p { color: rgba(255,255,255,.75); }
+      .pill-list { display: flex; flex-wrap: wrap; gap: 9px; padding: 0; list-style: none; }
+      .pill-list li { padding: 7px 12px; border: 1px solid rgba(24,61,53,.2); border-radius: 999px; font-size: .9rem; }
+      .dark .pill-list li { border-color: rgba(255,255,255,.3); }
+
+      .pastor { background: #eef3ed; }
+      .pastor-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: 72px; align-items: center; }
+      .pastor-photo { overflow: hidden; border-radius: 50% 50% 18px 18px; background: var(--sage); box-shadow: var(--shadow); }
+      .pastor-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+      .pastor-quote { margin: 26px 0; padding-left: 20px; border-left: 4px solid var(--coral); font-size: 1.3rem; font-weight: 700; }
+      .credentials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 22px; border-top: 1px solid var(--line); }
+      .credentials span { color: var(--muted); font-size: .9rem; }
+
+      .sermon-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; }
+      .sermon-feature { display: flex; min-height: 330px; flex-direction: column; justify-content: end; padding: 34px; border-radius: var(--radius-lg); background: var(--ink); color: #fff; }
+      .sermon-feature p { color: rgba(255,255,255,.75); }
+      .sermon-empty { display: flex; flex-direction: column; justify-content: center; padding: 34px; border: 1px dashed rgba(24,61,53,.3); border-radius: var(--radius-lg); background: var(--cream); }
+      .sermon-empty .btn { align-self: start; margin-top: 12px; }
+
+      .community { background: var(--cream); }
+      .community-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .community-card { min-height: 270px; padding: 28px; border-radius: var(--radius-md); background: #fff; }
+      .community-card:nth-child(2) { background: var(--coral); color: #fff; }
+      .community-card:nth-child(3) { background: var(--lime); color: var(--ink-deep); }
+      .community-card .number { display: block; margin-bottom: 45px; font-size: .85rem; font-weight: 800; letter-spacing: .1em; }
+      .community-card p { opacity: .75; }
+
+      .worship { background: var(--ink); color: #fff; }
+      .worship .section-heading p { color: rgba(255,255,255,.72); }
+      .worship-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 24px; }
+      .worship-main, .worship-side { padding: 34px; border-radius: var(--radius-lg); }
+      .worship-main { background: #fff; color: var(--ink); }
+      .worship-side { border: 1px solid rgba(255,255,255,.25); }
+      .time { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 22px 0; border-top: 1px solid var(--line); }
+      .time strong { font-size: clamp(2rem, 6vw, 4rem); line-height: 1; letter-spacing: -.06em; }
+      .time span { color: var(--muted); }
+      .worship-side .info-row { padding: 17px 0; border-bottom: 1px solid rgba(255,255,255,.18); }
+      .worship-side .info-row:last-child { border-bottom: 0; }
+      .worship-side small { display: block; margin-bottom: 4px; color: var(--lime); font-weight: 800; }
+
+      .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .contact-card { padding: 34px; border-radius: var(--radius-lg); background: var(--sage); }
+      .contact-card.dark { background: var(--ink); color: #fff; }
+      .contact-card.dark p { color: rgba(255,255,255,.72); }
+      .address { margin: 24px 0; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 1.15rem; font-weight: 800; }
+      .dark .address { border-color: rgba(255,255,255,.22); }
+      .map-placeholder { min-height: 170px; display: grid; place-items: center; margin-top: 24px; border: 1px dashed rgba(24,61,53,.35); border-radius: var(--radius-md); color: var(--muted); text-align: center; }
+
+      footer { padding: 32px 0; background: var(--ink-deep); color: rgba(255,255,255,.75); }
+      .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+      .footer-row img { width: 180px; filter: brightness(0) invert(1); opacity: .88; }
+      footer p { margin: 0; font-size: .84rem; }
+
+      @media (max-width: 820px) {
+        .wrap { width: min(100% - 32px, 640px); }
+        .section { padding: 70px 0; }
+        .nav { min-height: 68px; }
+        .brand img { width: 220px; max-width: 68vw; max-height: 38px; }
+        .menu-toggle { display: block; }
+        .nav-links { position: absolute; display: none; left: 16px; right: 16px; top: 76px; flex-direction: column; align-items: stretch; gap: 0; padding: 12px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+        .nav-links.is-open { display: flex; }
+        .nav-links a { padding: 12px; }
+        .nav-links .btn { margin-top: 6px; }
+        .hero { padding: 55px 0 64px; }
+        .hero-grid, .welcome-grid, .pastor-grid, .sermon-layout, .worship-grid { grid-template-columns: 1fr; gap: 32px; }
+        .hero-art { width: 100%; }
+        .section-heading { display: block; }
+        .section-heading p { margin-top: 15px; }
+        .notice, .community-grid { grid-template-columns: 1fr; }
+        .intro-grid, .contact-grid { grid-template-columns: 1fr; }
+        .intro-card { min-height: 260px; }
+        .pastor-photo { max-width: 360px; margin: 0 auto; }
+        .credentials { grid-template-columns: 1fr; }
+        .sermon-feature, .sermon-empty, .contact-card { padding: 26px; }
+        .footer-row { align-items: start; flex-direction: column; }
+      }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 바로가기</a>
+    <header>
+      <div class="wrap nav">
+        <a class="brand" href="#top" aria-label="파주꽃동산교회 홈"><img src="assets/paju-flower-logo-transparent.png" alt="파주꽃동산교회 로고" /></a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="메뉴 열기">☰</button>
+        <nav id="site-nav" class="nav-links" aria-label="주요 메뉴">
+          <a href="#welcome">처음 오셨나요</a>
+          <a href="#pastor">목사님</a>
+          <a href="#sermon">말씀</a>
+          <a href="#community">다음세대·지역사회</a>
+          <a class="btn btn-primary" href="#worship">예배 안내</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section id="top" class="hero">
+        <div class="wrap hero-grid">
+          <div>
+            <p class="eyebrow">A church close to people</p>
+            <h1><span class="hero-title-line">다시,</span><span class="hero-title-line">하나님을</span><span class="hero-title-line">바라보는</span><span class="hero-title-line">자리</span></h1>
+            <p class="hero-copy">파주꽃동산교회는 예수 그리스도와 말씀을 중심으로, 삶에 지친 사람과 지역사회의 곁에서 함께 걸어가는 교회입니다.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#worship">예배 안내 보기</a>
+              <a class="btn btn-outline" href="#welcome">교회 알아보기</a>
+            </div>
+          </div>
+          <div class="hero-art"><img src="assets/paju-flower-hero-people.webp" alt="파주꽃동산교회로 향하는 가족과 사람들" /></div>
+        </div>
+      </section>
+
+      <section id="welcome" class="section welcome">
+        <div class="wrap welcome-grid">
+          <div>
+            <p class="eyebrow">Welcome</p>
+            <h2>처음 오셨나요?</h2>
+          </div>
+          <div>
+            <p class="welcome-copy">교회가 낯설어도 괜찮습니다.<br /><em>삶의 질문에서 시작해</em><br />말씀과 예배로 천천히 연결됩니다.</p>
+            <div class="notice">
+              <div class="notice-card"><strong>누구에게나</strong><span class="muted">현재 성도, 다시 교회를 찾는 사람, 처음 예수를 알아가는 사람을 환대합니다.</span></div>
+              <div class="notice-card"><strong>무엇을 전하나요</strong><span class="muted">사람보다 말씀을 높이고, 말씀을 삶에 연결합니다.</span></div>
+              <div class="notice-card"><strong>다음 걸음</strong><span class="muted">예배 안내를 보고 편한 마음으로 방문해 주세요.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        <div class="wrap">
+          <div class="section-heading"><div><p class="eyebrow">About the church</p><h2>사람 곁에 있는 교회</h2></div><p>교회의 크기를 먼저 보여주기보다, 현재의 예배와 말씀, 사람을 만나는 삶을 기록합니다.</p></div>
+          <div class="intro-grid">
+            <article class="intro-card"><p class="eyebrow">Our direction</p><h3>말씀에서 삶으로</h3><p class="muted">성경이 말하는 것을 배우고, 목회자의 실제 설교와 목회를 통해 우리 삶에 어떻게 적용할지 함께 생각합니다.</p><ul class="pill-list"><li>예배</li><li>말씀</li><li>기도</li><li>공동체</li></ul></article>
+            <article class="intro-card dark"><p class="eyebrow">Our posture</p><h3>절망에서 희망으로</h3><p>고난과 상처를 소비하지 않고, 말씀 안에서 다시 하나님을 바라보며 사람들과 연결되는 길을 찾습니다.</p><a class="btn btn-light" href="#sermon">말씀 만나기 →</a></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="pastor" class="section pastor">
+        <div class="wrap pastor-grid">
+          <div class="pastor-photo"><img src="assets/pastor-choi.jpg" alt="파주꽃동산교회 최철민 목사" /></div>
+          <div>
+            <p class="eyebrow">Pastor Choi</p>
+            <h2>최철민 목사</h2>
+            <p class="pastor-quote">“파주에서 다음세대의 지도자들을 키우기 위해 사역하는 최철민 목사입니다.”</p>
+            <p class="muted">하나님의 부르심에 합당한 삶을 살고자 매일 도전하며 전진하고, 믿음의 동역자들과 소통하는 목회자입니다. 이 소개는 제공된 목사님 원문을 바탕으로 구성했습니다.</p>
+            <div class="credentials"><span>한남대학교<br />영어교육과 B.A</span><span>총신대학교<br />신학대학원 M.Div</span><span>총신대학교 일반대학원<br />기독교교육 M.A · 박사과정</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sermon" class="section">
+        <div class="wrap">
+          <div class="section-heading"><div><p class="eyebrow">Word & Sermon</p><h2>말씀은 삶으로 이어집니다</h2></div><p>175편의 기존 설교는 원본을 보존하고, 실제 메시지와 삶의 적용을 연결하는 말씀 라이브러리로 확장합니다.</p></div>
+          <div class="sermon-layout">
+            <article class="sermon-feature"><p class="eyebrow">Message library</p><h3>고난과 회복 · 코람데오 · 신앙의 훈련</h3><p>청지기와 나눔, 사명과 완주까지. 현재 확인된 메시지 중심축을 실제 설교 원본과 함께 차근차근 정리합니다.</p><a class="btn btn-primary" href="#contact">설교 자료 준비 중</a></article>
+            <div class="sermon-empty"><p class="eyebrow">Coming next</p><h3>설교 아카이브를 준비하고 있습니다</h3><p class="muted">현재 공개할 설교 목록과 영상 링크가 연결되면 최신 설교와 주제별 말씀을 이곳에서 만나실 수 있습니다.</p><a class="btn btn-outline" href="tel:010-9292-3405">문의하기</a></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="community" class="section community">
+        <div class="wrap">
+          <div class="section-heading"><div><p class="eyebrow">People & Neighborhood</p><h2>사람을 만나는 교회</h2></div><p>교회 안에서 기다리는 목회와 지역사회로 들어가는 목회를 함께 기록합니다.</p></div>
+          <div class="community-grid">
+            <article class="community-card"><span class="number">01 / NEXT GENERATION</span><h3>아이들이 꿈꾸는 자리</h3><p>아이들과 가정이 안전하게 만나고 성장하는 사역의 이야기를 담습니다.</p></article>
+            <article class="community-card"><span class="number">02 / LOCAL CARE</span><h3>지역 곁으로</h3><p>지역아동센터와 어린이 축구교실 등 실제 만남을 통해 돌봄과 희망을 나눕니다.</p></article>
+            <article class="community-card"><span class="number">03 / REAL STORIES</span><h3>사진과 이야기</h3><p>공개 가능한 실제 자료가 확보되는 순서대로 현장의 기록을 교체해 담습니다.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="worship" class="section worship">
+        <div class="wrap">
+          <div class="section-heading"><div><p class="eyebrow">Worship</p><h2>예배로 초대합니다</h2></div><p>처음 오시는 분도 찾기 쉽게 현재 예배 시간과 장소를 안내합니다.</p></div>
+          <div class="worship-grid">
+            <article class="worship-main"><p class="eyebrow">Sunday worship</p><h3>주일예배</h3><div class="time"><strong>오후 3:30</strong><span>매주 주일</span></div><p class="muted">꿈사랑교회와 함께 예배드립니다.</p><a class="btn btn-primary" href="#location">오시는 길 보기</a></article>
+            <aside class="worship-side"><div class="info-row"><small>WORSHIP PLACE</small>경기 파주시 미래로602번길 27<br />태운플라자 7층</div><div class="info-row"><small>PARKING</small>경기 파주시 미래로602번길 11<br />건물 지하주차장 · 주차비 교회 지원</div><div class="info-row"><small>CONTACT</small><a href="tel:010-9292-3405">010-9292-3405</a></div></aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="location" class="section">
+        <div class="wrap">
+          <div class="section-heading"><div><p class="eyebrow">Visit us</p><h2>오시는 길</h2></div><p>예배 장소와 주차 장소가 다르니 방문 전에 확인해 주세요.</p></div>
+          <div class="contact-grid">
+            <article class="contact-card"><p class="eyebrow">Worship location</p><h3>예배 장소</h3><p class="address">경기 파주시 미래로602번길 27<br />태운플라자 7층</p><p class="muted">꿈사랑교회와 공유하여 예배드립니다.</p><div class="map-placeholder" aria-label="지도 연결 준비 중">지도 연결 영역<br /><small>공식 지도 링크를 확인 후 연결합니다.</small></div></article>
+            <article id="contact" class="contact-card dark"><p class="eyebrow">Parking & contact</p><h3>주차와 문의</h3><p class="address">주차장: 경기 파주시 미래로602번길 11<br />건물 지하주차장</p><p>주차비는 교회에서 지원해 드립니다.</p><a class="btn btn-primary" href="tel:010-9292-3405">전화로 문의하기</a></article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap footer-row"><img src="assets/paju-flower-logo.png" alt="파주꽃동산교회" /><p>파주꽃동산교회 · 예수 그리스도와 말씀을 중심으로 사람 곁에 있는 교회<br />© <span id="year"></span> Paju Flower Church. All rights reserved.</p></div>
+    </footer>
+    <script>
+      const toggle = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('#site-nav');
+      toggle.addEventListener('click', () => {
+        const open = nav.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+        toggle.textContent = open ? '×' : '☰';
+      });
+      nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', '메뉴 열기');
+        toggle.textContent = '☰';
+      }));
+      document.querySelector('#year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
