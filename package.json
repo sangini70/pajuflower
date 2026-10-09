@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "generate": "node scripts/generate-static-content.mjs",
+    "draft": "node scripts/create-content-draft.mjs",
     "validate": "node scripts/validate-content.test.mjs",
+    "draft:test": "node scripts/create-content-draft.test.mjs",
     "dev": "vite --host 127.0.0.1",
     "build": "npm run generate && vite build && node scripts/copy-static-content.mjs"
   },
