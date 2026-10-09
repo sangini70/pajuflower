@@ -10,6 +10,7 @@
     "validate": "node scripts/validate-content.test.mjs",
     "draft:test": "node scripts/create-content-draft.test.mjs",
     "register:test": "node scripts/register-approved-content.test.mjs",
+    "e2e:test": "node scripts/weekly-content-e2e.test.mjs",
     "dev": "vite --host 127.0.0.1",
     "build": "npm run generate && vite build && node scripts/copy-static-content.mjs"
   },
