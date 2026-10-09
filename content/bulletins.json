@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bulletin-2026-10-04-14-40",
+    "slug": "2026-10-04",
+    "date": "2026-10-04",
+    "issueNumber": "제14권 40호",
+    "title": "2026년 10월 4일 주보",
+    "description": "파주꽃동산교회 2026년 10월 4일 주보의 공개 승인된 기본 정보입니다.",
+    "publicFile": null,
+    "sourceReference": "REFERENCE/BULLETINS/2026-10-04/bulletin_2026-10-04_p01.jpg",
+    "relatedSermonId": "sermon-2026-10-04",
+    "privacyReview": "approved-for-metadata-only",
+    "publicStatus": "published",
+    "approvalStatus": "approved",
+    "archiveStatus": "current",
+    "churchNews": [
+      {
+        "title": "교회 표어",
+        "description": "빛과 소금의 사명을 이루는 교회 (마태복음 5:13-14)",
+        "publicStatus": "pending",
+        "approvalStatus": "pending"
+      },
+      {
+        "title": "10월 주제",
+        "description": "몸과 마음을 새롭게 하는 달",
+        "publicStatus": "pending",
+        "approvalStatus": "pending"
+      }
+    ],
+    "updatedAt": "2026-10-10"
+  }
+]

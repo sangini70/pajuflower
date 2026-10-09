@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pajuflower.vercel.app/sitemap.xml

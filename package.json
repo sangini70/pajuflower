@@ -4,8 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "generate": "node scripts/generate-static-content.mjs",
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build"
+    "build": "npm run generate && vite build && node scripts/copy-static-content.mjs"
   },
   "devDependencies": {
     "vite": "^7.0.0"
