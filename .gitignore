@@ -1,4 +1,5 @@
 node_modules/
+REFERENCE/
 vercel-build/
 .vercel/
 .npm/

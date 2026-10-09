@@ -23,17 +23,30 @@ const escapeHtml = (value = '') => String(value)
 
 const canonical = (pathname) => `${siteOrigin}${pathname}`;
 const isoDate = (date) => `${date}T00:00:00+09:00`;
+const structuredData = (value) => JSON.stringify(value).replaceAll('<', '\\u003c');
 
-const shell = ({ title, description, pathname, body, ogType = 'website' }) => shellTemplate
+const shell = ({ title, description, pathname, body, ogType = 'website', jsonLd = [] }) => shellTemplate
   .replaceAll('{{TITLE}}', escapeHtml(title))
   .replaceAll('{{DESCRIPTION}}', escapeHtml(description))
   .replaceAll('{{CANONICAL}}', escapeHtml(canonical(pathname)))
   .replaceAll('{{OG_TYPE}}', escapeHtml(ogType))
   .replaceAll('{{OG_IMAGE}}', escapeHtml(canonical('/assets/paju-flower-logo.png')))
+  .replaceAll('{{STRUCTURED_DATA}}', structuredData(jsonLd))
   .replaceAll('{{BODY}}', body);
 
 const sermonById = new Map(publicSermons.map((sermon) => [sermon.id, sermon]));
 const bulletinBySermonId = new Map(publicBulletins.map((bulletin) => [bulletin.relatedSermonId, bulletin]));
+
+const breadcrumbJsonLd = (items) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.pathname === '/' ? 'Home' : item.pathname === '/sermons/' ? 'Sermon archive' : item.pathname === '/bulletins/' ? 'Bulletin archive' : item.name,
+    item: canonical(item.pathname)
+  }))
+});
 
 const sermonCard = (sermon) => `<article class="content-card"><p class="content-eyebrow">설교 · ${escapeHtml(sermon.date)}</p><h2><a href="/sermons/${escapeHtml(sermon.slug)}/">${escapeHtml(sermon.title)}</a></h2><p>${escapeHtml(sermon.scripture)} · ${escapeHtml(sermon.preacher)}</p><a class="content-link" href="/sermons/${escapeHtml(sermon.slug)}/">상세 보기 →</a></article>`;
 const bulletinCard = (bulletin) => `<article class="content-card"><p class="content-eyebrow">주보 · ${escapeHtml(bulletin.date)}</p><h2><a href="/bulletins/${escapeHtml(bulletin.slug)}/">${escapeHtml(bulletin.title)}</a></h2><p>${escapeHtml(bulletin.issueNumber)}</p><a class="content-link" href="/bulletins/${escapeHtml(bulletin.slug)}/">상세 보기 →</a></article>`;
@@ -43,6 +56,10 @@ const listPage = (kind, items, title, description, cardRenderer, pathname) => sh
   description,
   pathname,
   ogType: 'website',
+  jsonLd: [breadcrumbJsonLd([
+    { name: '홈', pathname: '/' },
+    { name: title, pathname }
+  ])],
   body: `<section class="content-hero"><p class="content-eyebrow">파주꽃동산교회</p><h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p></section><section class="content-grid" aria-label="${escapeHtml(title)} 목록">${items.length ? items.map(cardRenderer).join('') : '<p>공개 승인된 자료가 없습니다.</p>'}</section>`
 });
 
@@ -55,6 +72,22 @@ const sermonDetail = (sermon) => {
     description: `${sermon.date} 파주꽃동산교회 설교: ${sermon.title} · ${sermon.scripture}`,
     pathname: `/sermons/${sermon.slug}/`,
     ogType: 'article',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: sermon.title,
+        datePublished: isoDate(sermon.date),
+        author: { '@type': 'Person', name: sermon.preacher },
+        about: { '@type': 'Thing', name: sermon.scripture },
+        mainEntityOfPage: canonical(`/sermons/${sermon.slug}/`)
+      },
+      breadcrumbJsonLd([
+        { name: '홈', pathname: '/' },
+        { name: '설교 아카이브', pathname: '/sermons/' },
+        { name: sermon.title, pathname: `/sermons/${sermon.slug}/` }
+      ])
+    ],
     body: `<article class="content-detail"><p class="content-eyebrow">설교 · ${escapeHtml(sermon.date)}</p><h1>${escapeHtml(sermon.title)}</h1><dl class="content-meta"><div><dt>성경 본문</dt><dd>${escapeHtml(sermon.scripture)}</dd></div><div><dt>설교자</dt><dd>${escapeHtml(sermon.preacher)}</dd></div></dl><p>${escapeHtml(sermon.summary)}</p><div class="content-actions">${video}${bulletinLink}</div></article>`
   });
 };
@@ -67,6 +100,11 @@ const bulletinDetail = (bulletin) => {
     description: `${bulletin.date} ${bulletin.issueNumber} 파주꽃동산교회 주보`,
     pathname: `/bulletins/${bulletin.slug}/`,
     ogType: 'article',
+    jsonLd: [breadcrumbJsonLd([
+      { name: '홈', pathname: '/' },
+      { name: '주보 아카이브', pathname: '/bulletins/' },
+      { name: bulletin.title, pathname: `/bulletins/${bulletin.slug}/` }
+    ])],
     body: `<article class="content-detail"><p class="content-eyebrow">주보 · ${escapeHtml(bulletin.date)}</p><h1>${escapeHtml(bulletin.title)}</h1><dl class="content-meta"><div><dt>호수</dt><dd>${escapeHtml(bulletin.issueNumber)}</dd></div><div><dt>관련 설교</dt><dd>${sermon ? escapeHtml(sermon.title) : '확인 중'}</dd></div></dl><p>${escapeHtml(bulletin.description)}</p><p class="content-note">주보 원본 이미지와 PDF, 개인정보가 포함된 원본 자료는 공개하지 않습니다. 공개 승인된 기본 정보만 제공합니다.</p><div class="content-actions">${related}</div></article>`
   });
 };
