@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertValidContent } from './validate-content.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -9,6 +10,8 @@ const siteOrigin = (process.env.SITE_ORIGIN || 'https://pajuflower.vercel.app').
 const sermons = JSON.parse(await readFile(path.join(root, 'content', 'sermons.json'), 'utf8'));
 const bulletins = JSON.parse(await readFile(path.join(root, 'content', 'bulletins.json'), 'utf8'));
 const shellTemplate = await readFile(path.join(root, 'templates', 'content-shell.html'), 'utf8');
+
+assertValidContent({ sermons, bulletins });
 
 const isPublic = (item) => item.publicStatus === 'published' && item.approvalStatus === 'approved';
 const publicSermons = sermons.filter(isPublic).sort((a, b) => b.date.localeCompare(a.date));
