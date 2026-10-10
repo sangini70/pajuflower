@@ -12,6 +12,18 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const APPROVAL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:/;
 const isText = (value) => typeof value === 'string' && value.trim().length > 0;
 const clone = (value) => JSON.parse(JSON.stringify(value));
+const youtubeIdFromUrl = (value) => {
+  if (!isText(value)) return null;
+  try {
+    const url = new URL(value);
+    let id = null;
+    if (url.hostname === 'youtu.be') id = url.pathname.slice(1);
+    if (['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(url.hostname) && url.pathname === '/watch') id = url.searchParams.get('v');
+    return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? id : null;
+  } catch {
+    return null;
+  }
+};
 
 const approvalErrors = (draft) => {
   const errors = [];
@@ -35,6 +47,28 @@ const requiredPublicFields = (draft) => {
   if (bulletin?.date && !DATE_PATTERN.test(bulletin.date)) errors.push('publicFields.bulletin.date is invalid');
   if (sermon?.date && bulletin?.date && sermon.date !== bulletin.date) errors.push('sermon and bulletin dates must match');
   if (sermon?.id && bulletin?.relatedSermonId && sermon.id !== bulletin.relatedSermonId) errors.push('bulletin must link to the registered sermon');
+  return errors;
+};
+
+const optionalApprovalErrors = (draft) => {
+  const errors = [];
+  const bulletin = draft?.publicFields?.bulletin;
+  for (const field of ['monthlyTheme', 'featuredChurchNews']) {
+    const item = bulletin?.[field];
+    if (item && (item.publicStatus !== 'published' || item.approvalStatus !== 'approved')) errors.push(`publicFields.bulletin.${field} must be approved`);
+  }
+  for (const field of ['worshipSchedule', 'churchNews']) {
+    const items = bulletin?.[field];
+    if (!Array.isArray(items)) continue;
+    for (const [index, item] of items.entries()) if (item.publicStatus !== 'published' || item.approvalStatus !== 'approved') errors.push(`publicFields.bulletin.${field}[${index}] must be approved`);
+  }
+  for (const field of ['worshipOrder', 'prayerTopics', 'faithGuide']) {
+    const section = bulletin?.[field];
+    if (!section) continue;
+    if (section.publicStatus !== 'published' || section.approvalStatus !== 'approved') errors.push(`publicFields.bulletin.${field} must be approved`);
+    if (!Array.isArray(section.items)) continue;
+    for (const [index, item] of section.items.entries()) if (item.publicStatus !== 'published' || item.approvalStatus !== 'approved') errors.push(`publicFields.bulletin.${field}.items[${index}] must be approved`);
+  }
   return errors;
 };
 
@@ -70,6 +104,50 @@ const publicOnly = (draft) => {
     archiveStatus: 'current',
     updatedAt: draft.approval.approvedAt.slice(0, 10)
   };
+  if (sourceBulletin.monthlyTheme) bulletin.monthlyTheme = {
+    month: sourceBulletin.monthlyTheme.month,
+    title: sourceBulletin.monthlyTheme.title,
+    publicStatus: 'published',
+    approvalStatus: 'approved'
+  };
+  if (sourceBulletin.featuredChurchNews) bulletin.featuredChurchNews = {
+    title: sourceBulletin.featuredChurchNews.title,
+    description: sourceBulletin.featuredChurchNews.description,
+    publicStatus: 'published',
+    approvalStatus: 'approved'
+  };
+  if (Array.isArray(sourceBulletin.worshipSchedule)) bulletin.worshipSchedule = sourceBulletin.worshipSchedule.map((item) => ({
+    date: item.date,
+    prayer: item.prayer,
+    specialSong: item.specialSong,
+    publicStatus: 'published',
+    approvalStatus: 'approved'
+  }));
+  if (Array.isArray(sourceBulletin.churchNews)) bulletin.churchNews = sourceBulletin.churchNews.map((item) => ({
+    title: item.title,
+    description: item.description,
+    publicStatus: 'published',
+    approvalStatus: 'approved'
+  }));
+  for (const [field, itemFields] of Object.entries({
+    worshipOrder: ['label', 'content', 'response'],
+    prayerTopics: ['title', 'description'],
+    faithGuide: ['title', 'description']
+  })) {
+    const sourceSection = sourceBulletin[field];
+    if (!sourceSection || !Array.isArray(sourceSection.items)) continue;
+    bulletin[field] = {
+      items: sourceSection.items.map((item) => {
+        const publicItem = {};
+        for (const itemField of itemFields) if (item[itemField] !== undefined) publicItem[itemField] = item[itemField];
+        publicItem.publicStatus = 'published';
+        publicItem.approvalStatus = 'approved';
+        return publicItem;
+      }),
+      publicStatus: 'published',
+      approvalStatus: 'approved'
+    };
+  }
   return { sermon, bulletin };
 };
 
@@ -78,12 +156,12 @@ const internalLeakErrors = (draft, publicOnlyData) => {
   const serialized = JSON.stringify(publicOnlyData);
   if (/REFERENCE[\\/]/i.test(serialized)) errors.push('public registration contains REFERENCE path');
   if (/sourceReference|privateNotes|rawText|childrenNames|attendees|personalNames|evidence|uncertainFields|conflicts/i.test(serialized)) errors.push('public registration contains internal draft fields');
-  if (draft.publicFields.sermon.youtubeUrl) errors.push('unverified YouTube URL must not be registered');
+  if (draft.publicFields.sermon.youtubeUrl && !youtubeIdFromUrl(draft.publicFields.sermon.youtubeUrl)) errors.push('invalid YouTube URL must not be registered');
   return errors;
 };
 
 export const prepareApprovedRegistration = ({ draft, sermons, bulletins }) => {
-  const errors = [...approvalErrors(draft), ...requiredPublicFields(draft)];
+  const errors = [...approvalErrors(draft), ...requiredPublicFields(draft), ...optionalApprovalErrors(draft)];
   if (errors.length) return { errors, data: null };
   const data = publicOnly(draft);
   errors.push(...internalLeakErrors(draft, data));

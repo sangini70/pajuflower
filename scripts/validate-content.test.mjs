@@ -33,6 +33,14 @@ const invalidConnection = clone(baseBulletins);
 invalidConnection[0].relatedSermonId = 'sermon-does-not-exist';
 assert.ok(errorsFor(baseSermons, invalidConnection).some((error) => error.includes('relatedSermonId not found')));
 
+const duplicateSchedule = clone(baseBulletins);
+duplicateSchedule[0].worshipSchedule.push({ ...duplicateSchedule[0].worshipSchedule[0] });
+assert.ok(errorsFor(baseSermons, duplicateSchedule).some((error) => error.includes('worshipSchedule duplicate date')));
+
+const unapprovedNews = clone(baseBulletins);
+unapprovedNews[0].churchNews[0].approvalStatus = 'pending';
+assert.ok(errorsFor(baseSermons, unapprovedNews).some((error) => error.includes('churchNews[0] must be approved')));
+
 const pendingSermons = clone(baseSermons);
 const pendingBulletins = clone(baseBulletins);
 pendingSermons[0].publicStatus = 'pending';
@@ -47,4 +55,4 @@ const privateLeak = clone(baseSermons);
 privateLeak[0].summary = '문의: 010-1234-5678';
 assert.ok(errorsFor(privateLeak).some((error) => error.includes('phone-like')));
 
-console.log('validate-content tests: PASS (normal, duplicate, missing, invalid date, invalid connection, pending, privacy)');
+console.log('validate-content tests: PASS (normal, duplicate, schedule duplicate, approval gate, missing, invalid date, invalid connection, pending, privacy)');

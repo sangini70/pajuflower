@@ -51,6 +51,103 @@ const checkPublicText = (items, label, fields, errors) => {
   }
 };
 
+const checkPublicValue = (value, path, errors) => {
+  if (typeof value === 'string') {
+    if (/REFERENCE[\\/]/i.test(value)) errors.push(`${path} public field references REFERENCE`);
+    if (EMAIL_PATTERN.test(value)) errors.push(`${path} public field contains email`);
+    if (PHONE_PATTERN.test(value)) errors.push(`${path} public field contains phone-like data`);
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => checkPublicValue(item, `${path}[${index}]`, errors));
+    return;
+  }
+  if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value)) checkPublicValue(child, `${path}.${key}`, errors);
+  }
+};
+
+const checkBulletinDetails = (bulletins, errors) => {
+  for (const [index, bulletin] of bulletins.entries()) {
+    const path = `bulletins[${index}]`;
+    if (bulletin.monthlyTheme !== undefined) {
+      if (!bulletin.monthlyTheme || typeof bulletin.monthlyTheme !== 'object' || Array.isArray(bulletin.monthlyTheme)) errors.push(`${path}.monthlyTheme must be an object`);
+      else {
+        for (const field of ['month', 'title']) if (!isNonEmptyString(bulletin.monthlyTheme[field])) errors.push(`${path}.monthlyTheme missing ${field}`);
+        if (bulletin.monthlyTheme.publicStatus !== 'published' || bulletin.monthlyTheme.approvalStatus !== 'approved') errors.push(`${path}.monthlyTheme must be approved before publication`);
+      }
+    }
+    if (bulletin.featuredChurchNews !== undefined) {
+      if (!bulletin.featuredChurchNews || typeof bulletin.featuredChurchNews !== 'object' || Array.isArray(bulletin.featuredChurchNews)) errors.push(`${path}.featuredChurchNews must be an object`);
+      else {
+        for (const field of ['title', 'description']) if (!isNonEmptyString(bulletin.featuredChurchNews[field])) errors.push(`${path}.featuredChurchNews missing ${field}`);
+        if (bulletin.featuredChurchNews.publicStatus !== 'published' || bulletin.featuredChurchNews.approvalStatus !== 'approved') errors.push(`${path}.featuredChurchNews must be approved before publication`);
+      }
+    }
+    for (const field of ['worshipSchedule', 'churchNews']) {
+      if (bulletin[field] === undefined) continue;
+      if (!Array.isArray(bulletin[field])) {
+        errors.push(`${path}.${field} must be an array`);
+        continue;
+      }
+      for (const [itemIndex, item] of bulletin[field].entries()) {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+          errors.push(`${path}.${field}[${itemIndex}] must be an object`);
+          continue;
+        }
+        const required = field === 'worshipSchedule' ? ['date', 'prayer', 'specialSong'] : ['title', 'description'];
+        for (const requiredField of required) if (!isNonEmptyString(item[requiredField])) errors.push(`${path}.${field}[${itemIndex}] missing ${requiredField}`);
+        if (item.publicStatus !== 'published' || item.approvalStatus !== 'approved') errors.push(`${path}.${field}[${itemIndex}] must be approved before publication`);
+      }
+      if (field === 'worshipSchedule') {
+        const dates = new Set();
+        for (const [itemIndex, item] of bulletin[field].entries()) {
+          if (!isNonEmptyString(item?.date)) continue;
+          if (dates.has(item.date)) errors.push(`${path}.worshipSchedule duplicate date: ${item.date} (index ${itemIndex})`);
+          dates.add(item.date);
+        }
+      }
+    }
+    for (const [field, required] of Object.entries({
+      worshipOrder: ['label', 'content'],
+      prayerTopics: ['title', 'description'],
+      faithGuide: ['title', 'description']
+    })) {
+      if (bulletin[field] === undefined) continue;
+      const section = bulletin[field];
+      if (!section || typeof section !== 'object' || Array.isArray(section)) {
+        errors.push(`${path}.${field} must be an object with items`);
+        continue;
+      }
+      const sectionApproved = section.publicStatus === 'published' && section.approvalStatus === 'approved';
+      if (!['draft', 'pending', 'published', 'archived'].includes(section.publicStatus)) errors.push(`${path}.${field} invalid publicStatus`);
+      if (!['pending', 'approved', 'rejected'].includes(section.approvalStatus)) errors.push(`${path}.${field} invalid approvalStatus`);
+      if (!Array.isArray(section.items)) {
+        errors.push(`${path}.${field}.items must be an array`);
+        continue;
+      }
+      for (const [itemIndex, item] of section.items.entries()) {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+          errors.push(`${path}.${field}.items[${itemIndex}] must be an object`);
+          continue;
+        }
+        for (const requiredField of required) if (!isNonEmptyString(item[requiredField])) errors.push(`${path}.${field}.items[${itemIndex}] missing ${requiredField}`);
+        if (!['draft', 'pending', 'published', 'archived'].includes(item.publicStatus)) errors.push(`${path}.${field}.items[${itemIndex}] invalid publicStatus`);
+        if (!['pending', 'approved', 'rejected'].includes(item.approvalStatus)) errors.push(`${path}.${field}.items[${itemIndex}] invalid approvalStatus`);
+        if (sectionApproved && (item.publicStatus !== 'published' || item.approvalStatus !== 'approved')) errors.push(`${path}.${field}.items[${itemIndex}] must be approved before publication`);
+      }
+    }
+    if (bulletin.publicStatus === 'published' && bulletin.approvalStatus === 'approved') {
+      for (const field of ['monthlyTheme', 'featuredChurchNews', 'worshipSchedule', 'churchNews', 'worshipOrder', 'prayerTopics', 'faithGuide']) {
+        const value = bulletin[field];
+        if (value === undefined) continue;
+        if (['worshipOrder', 'prayerTopics', 'faithGuide'].includes(field) && (value.publicStatus !== 'published' || value.approvalStatus !== 'approved')) continue;
+        checkPublicValue(value, `${path}.${field}`, errors);
+      }
+    }
+  }
+};
+
 export const validateContent = ({ sermons, bulletins }) => {
   const errors = [];
   if (!Array.isArray(sermons)) errors.push('sermons.json must contain an array');
@@ -82,6 +179,7 @@ export const validateContent = ({ sermons, bulletins }) => {
 
   checkPublicText(sermons, 'sermons', ['title', 'scripture', 'preacher', 'summary', 'youtubeUrl', 'thumbnail'], errors);
   checkPublicText(bulletins, 'bulletins', ['title', 'description', 'issueNumber', 'publicFile'], errors);
+  checkBulletinDetails(bulletins, errors);
   return errors;
 };
 

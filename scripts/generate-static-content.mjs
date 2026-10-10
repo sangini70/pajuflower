@@ -14,8 +14,9 @@ const shellTemplate = await readFile(path.join(root, 'templates', 'content-shell
 assertValidContent({ sermons, bulletins });
 
 const isPublic = (item) => item.publicStatus === 'published' && item.approvalStatus === 'approved';
-const publicSermons = sermons.filter(isPublic).sort((a, b) => b.date.localeCompare(a.date));
-const publicBulletins = bulletins.filter(isPublic).sort((a, b) => b.date.localeCompare(a.date));
+const newestFirst = (a, b) => b.date.localeCompare(a.date) || String(a.id || a.slug).localeCompare(String(b.id || b.slug));
+const publicSermons = sermons.filter(isPublic).sort(newestFirst);
+const publicBulletins = bulletins.filter(isPublic).sort(newestFirst);
 
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
@@ -27,6 +28,24 @@ const escapeHtml = (value = '') => String(value)
 const canonical = (pathname) => `${siteOrigin}${pathname}`;
 const isoDate = (date) => `${date}T00:00:00+09:00`;
 const structuredData = (value) => JSON.stringify(value).replaceAll('<', '\\u003c');
+const youtubeIdFromUrl = (value) => {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    let id = null;
+    if (url.hostname === 'youtu.be') id = url.pathname.slice(1);
+    if (['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(url.hostname) && url.pathname === '/watch') id = url.searchParams.get('v');
+    return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? id : null;
+  } catch {
+    return null;
+  }
+};
+const youtubeEmbed = (sermon, compact = false) => {
+  const videoId = youtubeIdFromUrl(sermon.youtubeUrl);
+  if (!videoId) return '';
+  const title = `${sermon.title} YouTube video`;
+  return `<div class="sermon-video${compact ? ' sermon-video-compact' : ''}"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="${escapeHtml(title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+};
 
 const shell = ({ title, description, pathname, body, ogType = 'website', jsonLd = [] }) => shellTemplate
   .replaceAll('{{TITLE}}', escapeHtml(title))
@@ -68,7 +87,8 @@ const listPage = (kind, items, title, description, cardRenderer, pathname) => sh
 
 const sermonDetail = (sermon) => {
   const bulletin = bulletinBySermonId.get(sermon.id);
-  const video = sermon.youtubeUrl ? `<a class="content-button" href="${escapeHtml(sermon.youtubeUrl)}">YouTube 원본 보기</a>` : '<p class="content-note">공식 YouTube 원본 URL은 확인 후 연결합니다.</p>';
+  const videoId = youtubeIdFromUrl(sermon.youtubeUrl);
+  const video = videoId ? `${youtubeEmbed(sermon)}<a class="content-button" href="${escapeHtml(sermon.youtubeUrl)}" target="_blank" rel="noopener noreferrer">유튜브에서 보기</a>` : '';
   const bulletinLink = bulletin ? `<a class="content-link" href="/bulletins/${escapeHtml(bulletin.slug)}/">관련 주보 보기 →</a>` : '';
   return shell({
     title: `${sermon.title} | 파주꽃동산교회 설교`,
@@ -95,9 +115,43 @@ const sermonDetail = (sermon) => {
   });
 };
 
+const approvedDetail = (item) => item?.publicStatus === 'published' && item?.approvalStatus === 'approved';
+const approvedSectionItems = (section) => {
+  if (Array.isArray(section)) return section.filter(approvedDetail);
+  if (!approvedDetail(section) || !Array.isArray(section.items)) return [];
+  return section.items.filter(approvedDetail);
+};
+const bulletinSection = (title, content) => content ? `<section class="bulletin-section"><h2>${escapeHtml(title)}</h2>${content}</section>` : '';
+const bulletinPage = (number, title, content) => `<section class="bulletin-page" aria-labelledby="bulletin-page-${number}"><p class="bulletin-page-label">PAGE ${number}</p><h2 id="bulletin-page-${number}">${escapeHtml(title)}</h2>${content}</section>`;
+const bulletinList = (items, renderer) => items.length ? `<ul class="bulletin-list">${items.map((item) => `<li>${renderer(item)}</li>`).join('')}</ul>` : '';
+const bulletinOrderSection = (bulletin) => {
+  const items = approvedSectionItems(bulletin.worshipOrder);
+  return bulletinSection('주일예배 순서', bulletinList(items, (item) => `<strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.content)}${item.response ? ` · ${escapeHtml(item.response)}` : ''}</span>`));
+};
+const bulletinNewsSection = (bulletin) => {
+  const items = approvedSectionItems(bulletin.churchNews);
+  return bulletinSection('교회 소식', bulletinList(items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`));
+};
+const bulletinScheduleSection = (bulletin) => {
+  const items = approvedSectionItems(bulletin.worshipSchedule);
+  if (!items.length) return '';
+  const rows = items.map((item) => `<div class="bulletin-table-row"><span>${escapeHtml(item.date)}</span><span>${escapeHtml(item.prayer)}</span><span>${escapeHtml(item.specialSong)}</span></div>`).join('');
+  return bulletinSection('예배 기도 및 특송 일정', `<div class="bulletin-table" role="table" aria-label="예배 기도 및 특송 일정"><div class="bulletin-table-row bulletin-table-head" role="row"><span>날짜</span><span>기도</span><span>특송</span></div>${rows}</div>`);
+};
+const bulletinTextSection = (bulletin, field, title) => {
+  const items = approvedSectionItems(bulletin[field]);
+  return bulletinSection(title, bulletinList(items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`));
+};
+
 const bulletinDetail = (bulletin) => {
   const sermon = sermonById.get(bulletin.relatedSermonId);
-  const related = sermon ? `<a class="content-link" href="/sermons/${escapeHtml(sermon.slug)}/">관련 설교 보기 →</a>` : '';
+  const sermonSection = sermon ? bulletinSection('설교', `<dl class="content-meta bulletin-sermon-meta"><div><dt>제목</dt><dd>${escapeHtml(sermon.title)}</dd></div><div><dt>성경 본문</dt><dd>${escapeHtml(sermon.scripture)}</dd></div><div><dt>설교자</dt><dd>${escapeHtml(sermon.preacher)}</dd></div></dl>`) : '';
+  const theme = approvedDetail(bulletin.monthlyTheme) ? bulletinSection('이번 달 안내', `<div class="bulletin-theme"><strong>${escapeHtml(bulletin.monthlyTheme.month)}</strong><span>${escapeHtml(bulletin.monthlyTheme.title)}</span></div>`) : '';
+  const page1 = bulletinPage(1, '교회 및 주보 기본 정보', `<dl class="content-meta"><div><dt>주보 날짜</dt><dd>${escapeHtml(bulletin.date)}</dd></div><div><dt>호수</dt><dd>${escapeHtml(bulletin.issueNumber)}</dd></div></dl><p>${escapeHtml(bulletin.description)}</p>`);
+  const page2 = bulletinPage(2, '교회 소식과 안내', [theme, bulletinNewsSection(bulletin), bulletinScheduleSection(bulletin), bulletinTextSection(bulletin, 'faithGuide', '신앙생활을 위한 10가지 믿음의 행동')].join(''));
+  const page3 = bulletinPage(3, '설교 말씀', `${sermonSection}${sermon ? `<p class="bulletin-sermon-summary">${escapeHtml(sermon.summary)}</p>` : ''}`);
+  const page4 = bulletinPage(4, '예배 순서와 기도 안내', [bulletinOrderSection(bulletin), bulletinTextSection(bulletin, 'prayerTopics', '교회 기도 제목')].join(''));
+  const details = `${page1}${page2}${page3}${page4}`;
   return shell({
     title: `${bulletin.title} | 파주꽃동산교회 주보`,
     description: `${bulletin.date} ${bulletin.issueNumber} 파주꽃동산교회 주보`,
@@ -108,8 +162,14 @@ const bulletinDetail = (bulletin) => {
       { name: '주보 아카이브', pathname: '/bulletins/' },
       { name: bulletin.title, pathname: `/bulletins/${bulletin.slug}/` }
     ])],
-    body: `<article class="content-detail"><p class="content-eyebrow">주보 · ${escapeHtml(bulletin.date)}</p><h1>${escapeHtml(bulletin.title)}</h1><dl class="content-meta"><div><dt>호수</dt><dd>${escapeHtml(bulletin.issueNumber)}</dd></div><div><dt>관련 설교</dt><dd>${sermon ? escapeHtml(sermon.title) : '확인 중'}</dd></div></dl><p>${escapeHtml(bulletin.description)}</p><p class="content-note">주보 원본 이미지와 PDF, 개인정보가 포함된 원본 자료는 공개하지 않습니다. 공개 승인된 기본 정보만 제공합니다.</p><div class="content-actions">${related}</div></article>`
+    body: `<article class="content-detail bulletin-detail"><p class="content-eyebrow">주보 · ${escapeHtml(bulletin.date)}</p><h1>${escapeHtml(bulletin.title)}</h1><p class="bulletin-related">관련 설교: ${sermon ? escapeHtml(sermon.title) : '확인 중'}</p>${details}</article>`
   });
+};
+
+const bulletinNewsCard = (bulletin) => {
+  const featured = approvedDetail(bulletin?.featuredChurchNews) ? bulletin.featuredChurchNews : null;
+  if (!featured) return '';
+  return `<article class="church-news-card"><h3>이번 주 교회 소식</h3><div class="church-news-item"><strong>${escapeHtml(featured.title)}</strong><p>${escapeHtml(featured.description)}</p></div></article>`;
 };
 
 const writePage = async (relative, content) => {
@@ -118,13 +178,15 @@ const writePage = async (relative, content) => {
   await writeFile(target, content, 'utf8');
 };
 
-await writePage('sermons/index.html', listPage('sermons', publicSermons, '설교 아카이브', '파주꽃동산교회의 공개 승인된 설교 목록입니다.', sermonCard, '/sermons/'));
-await writePage('bulletins/index.html', listPage('bulletins', publicBulletins, '주보 아카이브', '파주꽃동산교회의 공개 승인된 주보 기본 정보입니다.', bulletinCard, '/bulletins/'));
+await writePage('sermons/index.html', listPage('sermons', publicSermons, '설교 목록', '파주꽃동산교회의 지난 설교를 모아 놓은 목록입니다.', sermonCard, '/sermons/'));
+await writePage('bulletins/index.html', listPage('bulletins', publicBulletins, '지난 주보', '파주꽃동산교회의 지난 주보를 확인하실 수 있습니다.', bulletinCard, '/bulletins/'));
 
 for (const sermon of publicSermons) await writePage(`sermons/${sermon.slug}/index.html`, sermonDetail(sermon));
 for (const bulletin of publicBulletins) await writePage(`bulletins/${bulletin.slug}/index.html`, bulletinDetail(bulletin));
 
-const latest = `<div class="sermon-layout"><article class="sermon-feature"><p class="eyebrow">Message library</p><h3>${escapeHtml(publicSermons[0]?.title || '설교 아카이브')}</h3><p>${escapeHtml(publicSermons[0] ? `${publicSermons[0].scripture} · ${publicSermons[0].preacher}` : '공개 승인된 설교 자료를 준비하고 있습니다.')}</p><a class="btn btn-primary" href="/sermons/">설교 아카이브 보기</a></article><div class="sermon-empty"><p class="eyebrow">Bulletin archive</p><h3>${escapeHtml(publicBulletins[0]?.title || '주보 아카이브')}</h3><p class="muted">${escapeHtml(publicBulletins[0] ? `${publicBulletins[0].issueNumber} · ${publicBulletins[0].date}` : '공개 승인된 주보 자료를 준비하고 있습니다.')}</p><a class="btn btn-outline" href="/bulletins/">주보 아카이브 보기</a></div></div>`;
+const latestSermon = publicSermons[0];
+const latestSermonVideo = latestSermon ? youtubeEmbed(latestSermon, true) : '';
+const latest = `<div class="sermon-layout"><article class="sermon-feature"><p class="eyebrow">최근 설교</p><h3>${escapeHtml(latestSermon?.title || '설교 목록')}</h3><p>${escapeHtml(latestSermon ? `${latestSermon.date} · ${latestSermon.scripture} · ${latestSermon.preacher}` : '공개 승인된 설교 자료를 준비하고 있습니다.')}</p>${latestSermonVideo}<a class="btn btn-primary" href="${latestSermon ? `/sermons/${escapeHtml(latestSermon.slug)}/` : '/sermons/'}">설교 보기</a></article><div class="sermon-side"><div class="sermon-empty"><div class="bulletin-card-content"><p class="eyebrow">최근 주보</p><h3>${escapeHtml(publicBulletins[0]?.title || '지난 주보')}</h3><p class="muted">${escapeHtml(publicBulletins[0] ? `${publicBulletins[0].issueNumber} · ${publicBulletins[0].date}` : '공개 승인된 주보 자료를 준비하고 있습니다.')}</p><a class="btn btn-outline" href="/bulletins/">주보 보기</a></div></div>${bulletinNewsCard(publicBulletins[0])}</div></div>`;
 const homePath = path.join(dist, 'index.html');
 const home = await readFile(homePath, 'utf8');
 const start = '<!-- GENERATED:latest-content:start -->';

@@ -30,7 +30,11 @@ const fakeInput = {
       issueNumber: 'E2E TEST ONLY ISSUE 999',
       title: 'E2E TEST ONLY Bulletin',
       description: 'E2E TEST ONLY public bulletin description',
-      slug: '2026-10-11'
+      slug: '2026-10-11',
+      monthlyTheme: { month: 'E2E TEST ONLY October', title: 'E2E TEST ONLY monthly theme' },
+      featuredChurchNews: { title: 'E2E TEST ONLY featured news', description: 'E2E TEST ONLY featured description' },
+      worshipSchedule: [{ date: '10.11', prayer: 'E2E TEST ONLY prayer', specialSong: 'E2E TEST ONLY song' }],
+      churchNews: [{ title: 'E2E TEST ONLY news', description: 'E2E TEST ONLY news description' }]
     },
     sermon: {
       date: '2026-10-11',
@@ -44,8 +48,21 @@ const fakeInput = {
   evidence: [{ field: 'sermon.title', sourceFile: 'private-p03.jpg' }]
 };
 
-const approveForTest = (draft) => ({
-  ...draft,
+const approveForTest = (draft) => {
+  const approved = JSON.parse(JSON.stringify(draft));
+  const bulletin = approved.publicFields.bulletin;
+  for (const field of ['monthlyTheme', 'featuredChurchNews']) if (bulletin[field]) {
+    bulletin[field].publicStatus = 'published';
+    bulletin[field].approvalStatus = 'approved';
+  }
+  for (const field of ['worshipSchedule', 'churchNews']) if (Array.isArray(bulletin[field])) {
+    for (const item of bulletin[field]) {
+      item.publicStatus = 'published';
+      item.approvalStatus = 'approved';
+    }
+  }
+  return {
+  ...approved,
   draftStatus: 'APPROVED',
   approval: {
     approved: true,
@@ -54,7 +71,8 @@ const approveForTest = (draft) => ({
     publicStatus: 'published',
     approvalStatus: 'approved'
   }
-});
+  };
+};
 
 const copyFixture = async () => {
   await cp(path.join(projectRoot, 'dist'), tempDist, { recursive: true });
@@ -108,6 +126,7 @@ try {
   assert.equal(writerCalls, 0);
 
   const approvedDraft = approveForTest(draft);
+  approvedDraft.publicFields.sermon.youtubeUrl = 'https://youtu.be/E2ETest1234';
   const registered = await registerApprovedDraft({
     draft: approvedDraft,
     sermons: originalSermons,
@@ -118,6 +137,10 @@ try {
   assert.equal(registered.bulletins.length, originalBulletins.length + 1);
   assert.equal(registered.sermons.at(-1).title, 'E2E TEST ONLY Sermon');
   assert.equal(registered.bulletins.at(-1).relatedSermonId, registered.sermons.at(-1).id);
+  assert.equal(registered.bulletins.at(-1).monthlyTheme.title, 'E2E TEST ONLY monthly theme');
+  assert.equal(registered.bulletins.at(-1).featuredChurchNews.title, 'E2E TEST ONLY featured news');
+  assert.equal(registered.bulletins.at(-1).worshipSchedule[0].prayer, 'E2E TEST ONLY prayer');
+  assert.equal(registered.bulletins.at(-1).churchNews[0].title, 'E2E TEST ONLY news');
   assert.equal(Object.hasOwn(registered.sermons.at(-1), 'sourceReference'), false);
   assert.equal(Object.hasOwn(registered.bulletins.at(-1), 'evidence'), false);
   assert.deepEqual(validateContent({ sermons: registered.sermons, bulletins: registered.bulletins }), []);
@@ -140,10 +163,16 @@ try {
   assert.match(publicFiles['bulletins/2026-10-11/index.html'], /E2E TEST ONLY Bulletin/);
   assert.match(publicFiles['index.html'], /E2E TEST ONLY Sermon/);
   assert.match(publicFiles['index.html'], /E2E TEST ONLY Bulletin/);
+  assert.match(publicFiles['index.html'], /이번 주 교회 소식/);
+  assert.match(publicFiles['index.html'], /E2E TEST ONLY featured news/);
+  assert.doesNotMatch(publicFiles['index.html'], /E2E TEST ONLY monthly theme|E2E TEST ONLY prayer|E2E TEST ONLY news/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /rel="canonical" href="https:\/\/pajuflower\.vercel\.app\/sermons\/e2e-test-only-sermon-2026-10-11\//);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /property="og:title"/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /Article/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /BreadcrumbList/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /유튜브에서 보기/);
+  assert.match(publicFiles['index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
   assert.match(publicFiles['bulletins/2026-10-11/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflower\.vercel\.app\/sermons\/e2e-test-only-sermon-2026-10-11\//);
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflower\.vercel\.app\/bulletins\/2026-10-11\//);

@@ -13,20 +13,106 @@
     "publicStatus": "published",
     "approvalStatus": "approved",
     "archiveStatus": "current",
+    "monthlyTheme": {
+      "month": "2026년 10월",
+      "title": "몸과 마음을 새롭게 하는 달",
+      "publicStatus": "published",
+      "approvalStatus": "approved"
+    },
+    "featuredChurchNews": {
+      "title": "가을대심방이 시작됩니다.",
+      "description": "기도로 준비해 주세요.",
+      "publicStatus": "published",
+      "approvalStatus": "approved"
+    },
+    "worshipSchedule": [
+      { "date": "10.04", "prayer": "박상연 집사", "specialSong": "여성목장", "publicStatus": "published", "approvalStatus": "approved" },
+      { "date": "10.11", "prayer": "박순자 권사", "specialSong": "다함께", "publicStatus": "published", "approvalStatus": "approved" },
+      { "date": "10.18", "prayer": "신화자 권사", "specialSong": "다함께", "publicStatus": "published", "approvalStatus": "approved" },
+      { "date": "10.25", "prayer": "김상인 집사", "specialSong": "다함께", "publicStatus": "published", "approvalStatus": "approved" }
+    ],
     "churchNews": [
       {
-        "title": "교회 표어",
-        "description": "빛과 소금의 사명을 이루는 교회 (마태복음 5:13-14)",
-        "publicStatus": "pending",
-        "approvalStatus": "pending"
+        "title": "가을대심방이 시작됩니다.",
+        "description": "기도로 준비해 주세요.",
+        "publicStatus": "published",
+        "approvalStatus": "approved"
       },
       {
-        "title": "10월 주제",
-        "description": "몸과 마음을 새롭게 하는 달",
-        "publicStatus": "pending",
-        "approvalStatus": "pending"
+        "title": "예배를 위해 20분 전에 오셔서 기도와 찬양으로 준비합시다.",
+        "description": "교회 새로 나오신 성도님을 환영합니다. 등록카드를 작성해서 제출해 주세요.",
+        "publicStatus": "published",
+        "approvalStatus": "approved"
+      },
+      {
+        "title": "2026년 교회 표어",
+        "description": "빛과 소금의 사명을 이루는 교회(마 5:13-14)",
+        "publicStatus": "published",
+        "approvalStatus": "approved"
+      },
+      {
+        "title": "행복일자리운동본부 이전감사예배",
+        "description": "일시: 2026.11.6.(화) 오전 11시 / 장소: 파주시 미래로 623, 3층",
+        "publicStatus": "published",
+        "approvalStatus": "approved"
       }
     ],
+    "worshipOrder": {
+      "publicStatus": "published",
+      "approvalStatus": "approved",
+      "items": [
+        { "label": "예배 시간", "content": "오후 3:30", "response": "주일낮예배", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "묵상기도", "content": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "기원", "content": "인도", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "개회찬송", "content": "아무도 예배하지 않는", "response": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "성시교독", "content": "40. 시편 96편", "response": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "신앙고백", "content": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "찬송", "content": "273장", "response": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "감사와 참회의 기도", "content": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "주기도문", "content": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "성경봉독", "content": "에베소서 4:22-24", "response": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "특송", "content": "435장", "response": "여성목장", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "말씀선포", "content": "새 사람을 입으라", "response": "담임목사", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "헌금찬송", "content": "436장", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "교회광고", "content": "담임목사", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "폐회송", "content": "세상의 유혹 시험이", "response": "다같이", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "축도", "content": "담임목사", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "주일학교", "content": "오전 9:30", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "중고등부 성경공부 모임", "content": "시간 4:30 · 신앙기초 세우기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "수요기도회", "content": "저녁 8:00 · 찬송·기도·성경봉독·말씀", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "금요기도회", "content": "금요일 오후 9:00 · 너는 내게 부르짖으라", "publicStatus": "published", "approvalStatus": "approved" },
+        { "label": "새벽기도회", "content": "월-금 새벽 5:30 · 누가복음 강해", "publicStatus": "published", "approvalStatus": "approved" }
+      ]
+    },
+    "faithGuide": {
+      "publicStatus": "published",
+      "approvalStatus": "approved",
+      "items": [
+        { "title": "1", "description": "온전한 주일성수", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "2", "description": "온전한 십일조 드리기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "3", "description": "매일 성경읽기 / 성경쓰기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "4", "description": "응답받는 기도생활하기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "5", "description": "가정예배 드리기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "6", "description": "경건서적 읽기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "7", "description": "목장모임 참석하기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "8", "description": "이웃사랑으로 봉사하기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "9", "description": "영혼구원을 위해 전도하기", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "10", "description": "세계를 품고 선교하기", "publicStatus": "published", "approvalStatus": "approved" }
+      ]
+    },
+    "prayerTopics": {
+      "publicStatus": "published",
+      "approvalStatus": "approved",
+      "items": [
+        { "title": "1", "description": "하나님을 사랑하고, 이웃을 사랑하는 성도가 되게 하소서.", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "2", "description": "평화통일과 군복무 중에 있는 형제들을 위해서, 나라의 지도자를 위해서", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "3", "description": "선교사님들을 위해서", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "7", "description": "파주노아선교단, 꽃동산축구선교단을 위해서", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "8", "description": "성령충만과 사명감당을 위해서", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "9", "description": "복음을 전하는 전도자가 되게 하소서.", "publicStatus": "published", "approvalStatus": "approved" },
+        { "title": "12", "description": "파주꽃동산교회의 부흥을 위해서", "publicStatus": "published", "approvalStatus": "approved" }
+      ]
+    },
     "updatedAt": "2026-10-10"
   }
 ]

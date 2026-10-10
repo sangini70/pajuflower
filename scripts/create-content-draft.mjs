@@ -26,6 +26,65 @@ const safePublicText = (value, field, review) => {
   return value.trim();
 };
 
+const optionalBulletinDetails = (input, uncertainFields) => {
+  const details = {};
+  const monthlyTheme = input.monthlyTheme;
+  if (monthlyTheme !== undefined) {
+    details.monthlyTheme = {
+      month: safePublicText(monthlyTheme?.month, 'bulletin.monthlyTheme.month', uncertainFields),
+      title: safePublicText(monthlyTheme?.title, 'bulletin.monthlyTheme.title', uncertainFields),
+      publicStatus: 'pending',
+      approvalStatus: 'pending'
+    };
+  }
+  if (input.featuredChurchNews !== undefined) {
+    details.featuredChurchNews = {
+      title: safePublicText(input.featuredChurchNews?.title, 'bulletin.featuredChurchNews.title', uncertainFields),
+      description: safePublicText(input.featuredChurchNews?.description, 'bulletin.featuredChurchNews.description', uncertainFields),
+      publicStatus: 'pending',
+      approvalStatus: 'pending'
+    };
+  }
+  if (input.worshipSchedule !== undefined) {
+    details.worshipSchedule = Array.isArray(input.worshipSchedule) ? input.worshipSchedule.map((item, index) => ({
+      date: safePublicText(item?.date, `bulletin.worshipSchedule[${index}].date`, uncertainFields),
+      prayer: safePublicText(item?.prayer, `bulletin.worshipSchedule[${index}].prayer`, uncertainFields),
+      specialSong: safePublicText(item?.specialSong, `bulletin.worshipSchedule[${index}].specialSong`, uncertainFields),
+      publicStatus: 'pending',
+      approvalStatus: 'pending'
+    })) : [];
+  }
+  if (input.churchNews !== undefined) {
+    details.churchNews = Array.isArray(input.churchNews) ? input.churchNews.map((item, index) => ({
+      title: safePublicText(item?.title, `bulletin.churchNews[${index}].title`, uncertainFields),
+      description: safePublicText(item?.description, `bulletin.churchNews[${index}].description`, uncertainFields),
+      publicStatus: 'pending',
+      approvalStatus: 'pending'
+    })) : [];
+  }
+  for (const [field, fields] of Object.entries({
+    worshipOrder: ['label', 'content'],
+    prayerTopics: ['title', 'description'],
+    faithGuide: ['title', 'description']
+  })) {
+    if (input[field] === undefined) continue;
+    const sourceItems = Array.isArray(input[field]) ? input[field] : input[field]?.items;
+    details[field] = {
+      items: Array.isArray(sourceItems) ? sourceItems.map((item, index) => {
+        const publicItem = {};
+        for (const itemField of fields) publicItem[itemField] = safePublicText(item?.[itemField], `bulletin.${field}.items[${index}].${itemField}`, uncertainFields);
+        if (field === 'worshipOrder' && item?.response !== undefined) publicItem.response = safePublicText(item.response, `bulletin.${field}.items[${index}].response`, uncertainFields);
+        publicItem.publicStatus = 'pending';
+        publicItem.approvalStatus = 'pending';
+        return publicItem;
+      }) : [],
+      publicStatus: 'pending',
+      approvalStatus: 'pending'
+    };
+  }
+  return details;
+};
+
 const getConflicts = ({ sermons, bulletins }, sermon, bulletin) => {
   const conflicts = [];
   const compare = (type, field, value, items) => {
@@ -104,6 +163,7 @@ export const createContentDraft = ({ input, sermons, bulletins }) => {
     approvalStatus: 'pending',
     archiveStatus: 'draft'
   };
+  Object.assign(bulletin, optionalBulletinDetails(bulletinInput, uncertainFields));
 
   const conflicts = getConflicts({ sermons, bulletins }, sermon, bulletin);
   for (const conflict of conflicts) addReview(uncertainFields, `conflict.${conflict.type}`);

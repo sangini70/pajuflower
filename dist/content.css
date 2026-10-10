@@ -20,14 +20,37 @@ a { color: inherit; }
 .content-card p { color: var(--muted); }
 .content-link { color: var(--ink); font-weight: 800; text-underline-offset: 4px; }
 .content-detail { max-width: 760px; padding: 96px 0; }
+.bulletin-detail { max-width: 880px; padding: 48px 0 64px; }
+.bulletin-detail h1 { margin-bottom: 10px; }
+.bulletin-related { margin: 0 0 18px; color: var(--muted); }
 .content-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 36px 0; }
 .content-meta div { padding: 18px; border-radius: 14px; background: var(--cream); }
 .content-meta dt { color: var(--muted); font-size: .85rem; }
 .content-meta dd { margin: 4px 0 0; font-weight: 800; }
+.bulletin-page { margin-top: 18px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 16px; background: rgba(248, 245, 237, .48); }
+.bulletin-page-label { margin: 0 0 4px; color: var(--coral); font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+.bulletin-page > h2 { margin: 0 0 12px; font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.2; }
+.bulletin-section { margin-top: 18px; }
+.bulletin-section h2 { margin: 0 0 9px; font-size: 1.12rem; line-height: 1.25; }
+.bulletin-theme { display: grid; gap: 4px; padding: 18px; border-radius: 14px; background: var(--cream); }
+.bulletin-theme strong { font-size: 1.08rem; }
+.bulletin-theme span, .bulletin-list span { color: var(--muted); }
+.bulletin-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.bulletin-list li { display: grid; gap: 3px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.bulletin-table { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--cream); }
+.bulletin-table-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.bulletin-table-row:first-child { border-top: 0; }
+.bulletin-table-head { color: var(--muted); font-size: .84rem; font-weight: 800; }
+.bulletin-table-row span { min-width: 0; overflow-wrap: anywhere; }
+.bulletin-sermon-meta { margin: 0; }
+.bulletin-sermon-summary { margin: 12px 0 0; color: var(--muted); }
 .content-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 30px; }
 .content-button { display: inline-flex; padding: 12px 18px; border-radius: 999px; background: var(--lime); color: var(--ink-deep); font-weight: 800; text-decoration: none; }
+.sermon-video { overflow: hidden; width: 100%; margin: 28px 0 0; aspect-ratio: 16 / 9; border-radius: 18px; background: var(--ink-deep); }
+.sermon-video iframe { display: block; width: 100%; height: 100%; border: 0; }
+.sermon-video-compact { margin: 18px 0 24px; border-radius: 14px; }
 .content-note { padding: 18px; border-left: 4px solid var(--coral); background: var(--cream); color: var(--muted); }
 .content-footer { padding: 28px 0; background: var(--ink-deep); color: rgba(255,255,255,.78); font-size: .9rem; }
 .content-footer .content-wrap { display: flex; align-items: center; gap: 18px; }
 .content-footer img { display: block; width: 180px; max-width: 48vw; filter: brightness(0) invert(1); opacity: .88; }
-@media (max-width: 680px) { .content-wrap { width: min(100% - 32px, 640px); } .content-header .content-wrap { align-items: flex-start; flex-direction: column; justify-content: center; padding: 16px 0; } .content-brand img { width: 190px; } .content-header nav { gap: 14px; font-size: .92rem; } .content-grid, .content-meta { grid-template-columns: 1fr; } .content-hero, .content-detail { padding: 64px 0 36px; } .content-footer .content-wrap { align-items: flex-start; flex-direction: column; gap: 12px; } .content-footer img { width: 160px; } }
+@media (max-width: 680px) { .content-wrap { width: min(100% - 32px, 640px); } .content-header .content-wrap { align-items: flex-start; flex-direction: column; justify-content: center; padding: 16px 0; } .content-brand img { width: 190px; } .content-header nav { gap: 14px; font-size: .92rem; } .content-grid, .content-meta { grid-template-columns: 1fr; } .content-hero, .content-detail { padding: 64px 0 36px; } .bulletin-detail { padding: 36px 0 48px; } .bulletin-page { margin-top: 14px; padding: 18px 16px; border-radius: 12px; } .content-footer .content-wrap { align-items: flex-start; flex-direction: column; gap: 12px; } .content-footer img { width: 160px; } .bulletin-table-row { grid-template-columns: 4.4rem minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 10px; font-size: .92rem; } }

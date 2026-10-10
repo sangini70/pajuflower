@@ -118,11 +118,29 @@
       .credentials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 22px; border-top: 1px solid var(--line); }
       .credentials span { color: var(--muted); font-size: .9rem; }
 
-      .sermon-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; }
-      .sermon-feature { display: flex; min-height: 330px; flex-direction: column; justify-content: end; padding: 34px; border-radius: var(--radius-lg); background: var(--ink); color: #fff; }
+      .sermon-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 24px; align-items: start; }
+      .sermon-feature { display: flex; min-width: 0; min-height: 330px; flex-direction: column; justify-content: flex-start; padding: 34px; border-radius: var(--radius-lg); background: var(--ink); color: #fff; }
       .sermon-feature p { color: rgba(255,255,255,.75); }
-      .sermon-empty { display: flex; flex-direction: column; justify-content: center; padding: 34px; border: 1px dashed rgba(24,61,53,.3); border-radius: var(--radius-lg); background: var(--cream); }
-      .sermon-empty .btn { align-self: start; margin-top: 12px; }
+      .sermon-video { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; overflow: hidden; margin: 18px 0 24px; border-radius: 14px; background: var(--ink-deep); }
+      .sermon-video iframe { display: block; width: 100%; height: 100%; max-width: 100%; border: 0; }
+      .sermon-empty { display: flex; min-width: 0; flex-direction: column; align-self: start; padding: 34px; border: 1px dashed rgba(24,61,53,.3); border-radius: var(--radius-lg); background: var(--cream); }
+      .bulletin-card-content { display: flex; width: 100%; flex-direction: column; align-items: flex-start; gap: 12px; }
+      .bulletin-card-content > * { margin: 0; }
+      .sermon-side { display: grid; min-width: 0; align-content: start; gap: 24px; }
+      .church-news-card { overflow: hidden; min-width: 0; align-self: start; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--cream); }
+      .church-news-card h3 { margin-bottom: 22px; }
+      .church-news-theme { display: grid; gap: 4px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+      .church-news-theme strong { font-size: 1.15rem; }
+      .church-news-theme span { color: var(--muted); }
+      .church-news-section + .church-news-section { margin-top: 24px; }
+      .church-news-section h4 { margin: 0 0 12px; font-size: 1rem; }
+      .worship-schedule { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.58); }
+      .worship-schedule-row { display: grid; grid-template-columns: 4.5rem 1fr 1fr; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--line); font-size: .9rem; }
+      .worship-schedule-row:first-child { border-top: 0; }
+      .worship-schedule-head { color: var(--muted); font-size: .78rem; font-weight: 800; }
+      .church-news-item { padding: 12px 0; border-top: 1px solid var(--line); }
+      .church-news-item strong { display: block; }
+      .church-news-item p, .church-news-empty { margin: 4px 0 0; color: var(--muted); }
 
       .community { background: var(--cream); }
       .community-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -151,7 +169,9 @@
       .contact-card.dark p { color: rgba(255,255,255,.72); }
       .address { margin: 24px 0; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 1.15rem; font-weight: 800; }
       .dark .address { border-color: rgba(255,255,255,.22); }
-      .map-placeholder { min-height: 170px; display: grid; place-items: center; margin-top: 24px; border: 1px dashed rgba(24,61,53,.35); border-radius: var(--radius-md); color: var(--muted); text-align: center; }
+      .map-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+      .map-actions .btn { min-height: 44px; padding: 0 14px; font-size: .9rem; }
+      .contact-card.dark > .btn-primary { margin-top: 16px; }
 
       footer { padding: 32px 0; background: var(--ink-deep); color: rgba(255,255,255,.75); }
       .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
@@ -178,7 +198,9 @@
         .intro-card { min-height: 260px; }
         .pastor-photo { max-width: 360px; margin: 0 auto; }
         .credentials { grid-template-columns: 1fr; }
-        .sermon-feature, .sermon-empty, .contact-card { padding: 26px; }
+        .sermon-feature, .sermon-empty, .church-news-card, .contact-card { padding: 26px; }
+        .map-actions { gap: 8px; }
+        .map-actions .btn { flex: 1 1 100%; min-width: 0; }
         .footer-row { align-items: start; flex-direction: column; }
       }
       @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
@@ -258,9 +280,9 @@
 
       <section id="sermon" class="section">
         <div class="wrap">
-          <div class="section-heading"><div><p class="eyebrow">Word & Sermon</p><h2>말씀은 삶으로 이어집니다</h2></div><p>175편의 기존 설교는 원본을 보존하고, 실제 메시지와 삶의 적용을 연결하는 말씀 라이브러리로 확장합니다.</p></div>
+          <div class="section-heading"><div><p class="eyebrow">Word & Sermon</p><h2>말씀은 삶으로 이어집니다</h2></div><p>매주 전해지는 설교 말씀과 교회 소식을<br>이곳에서 확인하실 수 있습니다.<br>말씀을 통해 믿음이 자라고,<br>일상 속에서 사랑을 실천하는 데<br>도움이 되기를 바랍니다.</p></div>
           <!-- GENERATED:latest-content:start -->
-          <div class="sermon-layout"><article class="sermon-feature"><p class="eyebrow">Message library</p><h3>새 사람을 입으라</h3><p>에베소서 4:22-24 · 최철민 목사</p><a class="btn btn-primary" href="/sermons/">설교 아카이브 보기</a></article><div class="sermon-empty"><p class="eyebrow">Bulletin archive</p><h3>2026년 10월 4일 주보</h3><p class="muted">제14권 40호 · 2026-10-04</p><a class="btn btn-outline" href="/bulletins/">주보 아카이브 보기</a></div></div>
+          <div class="sermon-layout"><article class="sermon-feature"><p class="eyebrow">최근 설교</p><h3>새 사람을 입으라</h3><p>2026-10-04 · 에베소서 4:22-24 · 최철민 목사</p><div class="sermon-video sermon-video-compact"><iframe src="https://www.youtube-nocookie.com/embed/qf2nbDDK7dk" title="새 사람을 입으라 YouTube video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="btn btn-primary" href="/sermons/sae-saram-eul-ibeura/">설교 보기</a></article><div class="sermon-side"><div class="sermon-empty"><div class="bulletin-card-content"><p class="eyebrow">최근 주보</p><h3>2026년 10월 4일 주보</h3><p class="muted">제14권 40호 · 2026-10-04</p><a class="btn btn-outline" href="/bulletins/">주보 보기</a></div></div><article class="church-news-card"><h3>이번 주 교회 소식</h3><div class="church-news-item"><strong>가을대심방이 시작됩니다.</strong><p>기도로 준비해 주세요.</p></div></article></div></div>
           <!-- GENERATED:latest-content:end -->
         </div>
       </section>
@@ -290,15 +312,15 @@
         <div class="wrap">
           <div class="section-heading"><div><p class="eyebrow">Visit us</p><h2>오시는 길</h2></div><p>예배 장소와 주차 장소가 다르니 방문 전에 확인해 주세요.</p></div>
           <div class="contact-grid">
-            <article class="contact-card"><p class="eyebrow">Worship location</p><h3>예배 장소</h3><p class="address">경기 파주시 미래로602번길 27<br />태운플라자 7층</p><p class="muted">꿈사랑교회와 공유하여 예배드립니다.</p><div class="map-placeholder" aria-label="지도 연결 준비 중">지도 연결 영역<br /><small>공식 지도 링크를 확인 후 연결합니다.</small></div></article>
-            <article id="contact" class="contact-card dark"><p class="eyebrow">Parking & contact</p><h3>주차와 문의</h3><p class="address">주차장: 경기 파주시 미래로602번길 11<br />건물 지하주차장</p><p>주차비는 교회에서 지원해 드립니다.</p><a class="btn btn-primary" href="tel:010-9292-3405">전화로 문의하기</a></article>
+            <article class="contact-card"><p class="eyebrow">Worship location</p><h3>예배 장소</h3><p class="address">경기 파주시 미래로602번길 27<br />태운플라자 7층</p><p class="muted">꿈사랑교회와 공유하여 예배드립니다.</p><div class="map-actions" aria-label="예배 장소 길찾기"><a class="btn btn-outline" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%ED%8C%8C%EC%A3%BC%EC%8B%9C%20%EB%AF%B8%EB%9E%98%EB%A1%9C602%EB%B2%88%EA%B8%B8%2027" target="_blank" rel="noopener noreferrer">네이버 지도 길찾기</a><a class="btn btn-outline" href="https://map.kakao.com/?q=%EA%B2%BD%EA%B8%B0%EB%8F%84%20%ED%8C%8C%EC%A3%BC%EC%8B%9C%20%EB%AF%B8%EB%9E%98%EB%A1%9C602%EB%B2%88%EA%B8%B8%2027" target="_blank" rel="noopener noreferrer">카카오맵 길찾기</a></div></article>
+            <article id="contact" class="contact-card dark"><p class="eyebrow">Parking & contact</p><h3>주차와 문의</h3><p class="address">주차장: 경기 파주시 미래로602번길 11<br />건물 지하주차장</p><div class="map-actions" aria-label="주차장 길찾기"><a class="btn btn-light" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%ED%8C%8C%EC%A3%BC%EC%8B%9C%20%EB%AF%B8%EB%9E%98%EB%A1%9C602%EB%B2%88%EA%B8%B8%2011" target="_blank" rel="noopener noreferrer">네이버 지도 길찾기</a><a class="btn btn-light" href="https://map.kakao.com/?q=%EA%B2%BD%EA%B8%B0%EB%8F%84%20%ED%8C%8C%EC%A3%BC%EC%8B%9C%20%EB%AF%B8%EB%9E%98%EB%A1%9C602%EB%B2%88%EA%B8%B8%2011" target="_blank" rel="noopener noreferrer">카카오맵 길찾기</a></div><a class="btn btn-primary" href="tel:010-9292-3405">전화로 문의하기</a></article>
           </div>
         </div>
       </section>
     </main>
 
     <footer>
-      <div class="wrap footer-row"><img src="assets/paju-flower-logo.png" alt="파주꽃동산교회" /><p>파주꽃동산교회 · 예수 그리스도와 말씀을 중심으로 사람 곁에 있는 교회<br />© <span id="year"></span> Paju Flower Church. All rights reserved.</p></div>
+      <div class="wrap footer-row"><img src="assets/paju-flower-logo-transparent.png" alt="파주꽃동산교회" /><p>파주꽃동산교회 · 예수 그리스도와 말씀을 중심으로 사람 곁에 있는 교회<br />© <span id="year"></span> Paju Flower Church. All rights reserved.</p></div>
     </footer>
     <script>
       const toggle = document.querySelector('.menu-toggle');
