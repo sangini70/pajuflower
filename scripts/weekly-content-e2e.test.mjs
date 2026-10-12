@@ -154,7 +154,7 @@ try {
   await saveJson(bulletinsFile, registered.bulletins);
   await execFileAsync(process.execPath, [path.join(tempScripts, 'generate-static-content.mjs')], {
     cwd: tempRoot,
-    env: { ...process.env, SITE_ORIGIN: 'https://pajuflower.vercel.app' }
+    env: { ...process.env, SITE_ORIGIN: 'https://pajuflowergarden.org' }
   });
   const publicFiles = await readPublicFiles();
   assert.match(publicFiles['sermons/index.html'], /e2e-test-only-sermon-2026-10-11/);
@@ -166,7 +166,7 @@ try {
   assert.match(publicFiles['index.html'], /이번 주 교회 소식/);
   assert.match(publicFiles['index.html'], /E2E TEST ONLY featured news/);
   assert.doesNotMatch(publicFiles['index.html'], /E2E TEST ONLY monthly theme|E2E TEST ONLY prayer|E2E TEST ONLY news/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /rel="canonical" href="https:\/\/pajuflower\.vercel\.app\/sermons\/e2e-test-only-sermon-2026-10-11\//);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-11\//);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /property="og:title"/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /Article/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /BreadcrumbList/);
@@ -174,9 +174,9 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /유튜브에서 보기/);
   assert.match(publicFiles['index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
   assert.match(publicFiles['bulletins/2026-10-11/index.html'], /BreadcrumbList/);
-  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflower\.vercel\.app\/sermons\/e2e-test-only-sermon-2026-10-11\//);
-  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflower\.vercel\.app\/bulletins\/2026-10-11\//);
-  assert.match(publicFiles['robots.txt'], /Sitemap: https:\/\/pajuflower\.vercel\.app\/sitemap\.xml/);
+  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-11\//);
+  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/bulletins\/2026-10-11\//);
+  assert.match(publicFiles['robots.txt'], /Sitemap: https:\/\/pajuflowergarden\.org\/sitemap\.xml/);
   for (const [file, content] of Object.entries(publicFiles)) {
     assert.doesNotMatch(content, /TEST_ONLY_PRIVATE_INPUT|private-p0|sourceReference|evidence/i, `private data leaked in ${file}`);
     if (file !== 'index.html') assert.doesNotMatch(content, /010-\d{4}-\d{4}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i, `private contact leaked in ${file}`);

@@ -5,7 +5,7 @@ import { assertValidContent } from './validate-content.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
-const siteOrigin = (process.env.SITE_ORIGIN || 'https://pajuflower.vercel.app').replace(/\/$/, '');
+const siteOrigin = (process.env.SITE_ORIGIN || 'https://pajuflowergarden.org').replace(/\/$/, '');
 
 const sermons = JSON.parse(await readFile(path.join(root, 'content', 'sermons.json'), 'utf8'));
 const bulletins = JSON.parse(await readFile(path.join(root, 'content', 'bulletins.json'), 'utf8'));
