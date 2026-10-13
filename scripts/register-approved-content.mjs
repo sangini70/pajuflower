@@ -37,11 +37,15 @@ const approvalErrors = (draft) => {
   return errors;
 };
 
-const requiredPublicFields = (draft) => {
+const requiredPublicFields = (draft, scope = 'both') => {
   const errors = [];
   const sermon = draft?.publicFields?.sermon;
   const bulletin = draft?.publicFields?.bulletin;
   for (const field of ['id', 'slug', 'date', 'title', 'scripture', 'preacher']) if (!isText(sermon?.[field])) errors.push(`publicFields.sermon.${field} is required`);
+  if (scope === 'sermon') {
+    if (sermon?.date && !DATE_PATTERN.test(sermon.date)) errors.push('publicFields.sermon.date is invalid');
+    return errors;
+  }
   for (const field of ['id', 'slug', 'date', 'issueNumber', 'title', 'description', 'relatedSermonId']) if (!isText(bulletin?.[field])) errors.push(`publicFields.bulletin.${field} is required`);
   if (sermon?.date && !DATE_PATTERN.test(sermon.date)) errors.push('publicFields.sermon.date is invalid');
   if (bulletin?.date && !DATE_PATTERN.test(bulletin.date)) errors.push('publicFields.bulletin.date is invalid');
@@ -50,8 +54,9 @@ const requiredPublicFields = (draft) => {
   return errors;
 };
 
-const optionalApprovalErrors = (draft) => {
+const optionalApprovalErrors = (draft, scope = 'both') => {
   const errors = [];
+  if (scope === 'sermon') return errors;
   const bulletin = draft?.publicFields?.bulletin;
   for (const field of ['monthlyTheme', 'featuredChurchNews']) {
     const item = bulletin?.[field];
@@ -72,10 +77,9 @@ const optionalApprovalErrors = (draft) => {
   return errors;
 };
 
-const publicOnly = (draft) => {
+const publicSermon = (draft) => {
   const sourceSermon = draft.publicFields.sermon;
-  const sourceBulletin = draft.publicFields.bulletin;
-  const sermon = {
+  return {
     id: sourceSermon.id,
     slug: sourceSermon.slug,
     date: sourceSermon.date,
@@ -89,6 +93,11 @@ const publicOnly = (draft) => {
     approvalStatus: 'approved',
     updatedAt: draft.approval.approvedAt.slice(0, 10)
   };
+};
+
+const publicOnly = (draft) => {
+  const sourceBulletin = draft.publicFields.bulletin;
+  const sermon = publicSermon(draft);
   const bulletin = {
     id: sourceBulletin.id,
     slug: sourceBulletin.slug,
@@ -161,13 +170,23 @@ const internalLeakErrors = (draft, publicOnlyData) => {
 };
 
 export const prepareApprovedRegistration = ({ draft, sermons, bulletins }) => {
-  const errors = [...approvalErrors(draft), ...requiredPublicFields(draft), ...optionalApprovalErrors(draft)];
+  const errors = [...approvalErrors(draft), ...requiredPublicFields(draft, 'both'), ...optionalApprovalErrors(draft, 'both')];
   if (errors.length) return { errors, data: null };
   const data = publicOnly(draft);
   errors.push(...internalLeakErrors(draft, data));
   const validationErrors = validateContent({ sermons: [...sermons, data.sermon], bulletins: [...bulletins, data.bulletin] });
   errors.push(...validationErrors);
   return { errors, data: errors.length ? null : { sermons: [...sermons, data.sermon], bulletins: [...bulletins, data.bulletin] } };
+};
+
+export const prepareApprovedSermonRegistration = ({ draft, sermons, bulletins }) => {
+  const errors = [...approvalErrors(draft), ...requiredPublicFields(draft, 'sermon'), ...optionalApprovalErrors(draft, 'sermon')];
+  if (errors.length) return { errors, data: null };
+  const data = publicSermon(draft);
+  errors.push(...internalLeakErrors(draft, { sermon: data }));
+  const validationErrors = validateContent({ sermons: [...sermons, data], bulletins });
+  errors.push(...validationErrors);
+  return { errors, data: errors.length ? null : { sermons: [...sermons, data], bulletins } };
 };
 
 const safeUnlink = async (file) => {
@@ -205,6 +224,26 @@ export const writeContentFiles = async ({ sermons, bulletins, sermonsFile = serm
   }
 };
 
+export const writeSermonFile = async ({ sermons, sermonsFile = sermonsPath }) => {
+  const token = randomUUID();
+  const sermonTemp = `${sermonsFile}.${token}.tmp`;
+  const sermonBackup = `${sermonsFile}.${token}.bak`;
+  let sermonBackedUp = false;
+  let sermonInstalled = false;
+  await mkdir(path.dirname(sermonsFile), { recursive: true });
+  try {
+    await writeFile(sermonTemp, `${JSON.stringify(sermons, null, 2)}\n`, 'utf8');
+    await rename(sermonsFile, sermonBackup); sermonBackedUp = true;
+    await rename(sermonTemp, sermonsFile); sermonInstalled = true;
+    await safeUnlink(sermonBackup);
+  } catch (error) {
+    if (sermonInstalled) await safeUnlink(sermonsFile);
+    if (sermonBackedUp) await rename(sermonBackup, sermonsFile);
+    await safeUnlink(sermonTemp);
+    throw error;
+  }
+};
+
 export const registerApprovedDraft = async ({ draft, sermons, bulletins, writeFiles = writeContentFiles }) => {
   const prepared = prepareApprovedRegistration({ draft, sermons, bulletins });
   if (prepared.errors.length) throw new Error(`Approved draft registration failed:\n- ${prepared.errors.join('\n- ')}`);
@@ -212,10 +251,18 @@ export const registerApprovedDraft = async ({ draft, sermons, bulletins, writeFi
   return prepared.data;
 };
 
+export const registerApprovedSermon = async ({ draft, sermons, bulletins, writeFile = writeSermonFile }) => {
+  const prepared = prepareApprovedSermonRegistration({ draft, sermons, bulletins });
+  if (prepared.errors.length) throw new Error(`Approved sermon registration failed:\n- ${prepared.errors.join('\n- ')}`);
+  await writeFile({ sermons: prepared.data.sermons });
+  return prepared.data;
+};
+
 const parseArgs = (argv) => {
   const args = {};
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--input') args.input = argv[++index];
+    else if (argv[index] === '--scope') args.scope = argv[++index];
     else if (argv[index] === '--help') args.help = true;
     else throw new Error(`Unsupported option: ${argv[index]}`);
   }
@@ -225,7 +272,7 @@ const parseArgs = (argv) => {
 const run = async () => {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || !args.input) {
-    console.log('Usage: npm run register -- --input drafts/approved-content-draft.json');
+    console.log('Usage: npm run register -- --input drafts/approved-content-draft.json [--scope both|sermon]');
     console.log('Approval is read from the draft and cannot be supplied as a command-line option.');
     if (!args.help) process.exitCode = 2;
     return;
@@ -236,8 +283,15 @@ const run = async () => {
   const draft = JSON.parse(await readFile(inputPath, 'utf8'));
   const sermons = JSON.parse(await readFile(sermonsPath, 'utf8'));
   const bulletins = JSON.parse(await readFile(bulletinsPath, 'utf8'));
-  await registerApprovedDraft({ draft, sermons, bulletins });
-  console.log('Approved draft registered in content/sermons.json and content/bulletins.json.');
+  const scope = args.scope || 'both';
+  if (!['both', 'sermon'].includes(scope)) throw new Error(`Unsupported registration scope: ${scope}`);
+  if (scope === 'sermon') {
+    await registerApprovedSermon({ draft, sermons, bulletins });
+    console.log('Approved sermon registered in content/sermons.json. Bulletin content was not changed.');
+  } else {
+    await registerApprovedDraft({ draft, sermons, bulletins });
+    console.log('Approved draft registered in content/sermons.json and content/bulletins.json.');
+  }
   console.log('No Git commit, push, or deployment was performed.');
 };
 

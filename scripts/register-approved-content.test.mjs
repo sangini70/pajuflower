@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { registerApprovedDraft, writeContentFiles } from './register-approved-content.mjs';
+import { registerApprovedDraft, registerApprovedSermon, writeContentFiles, writeSermonFile } from './register-approved-content.mjs';
 
 const load = async (name) => JSON.parse(await readFile(new URL(`../content/${name}.json`, import.meta.url), 'utf8'));
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -22,14 +22,14 @@ const approvedDraft = () => ({
   evidence: [{ field: 'sermon.title', sourceFile: 'private.jpg' }],
   publicFields: {
     sermon: {
-      id: 'sermon-2026-10-11', slug: 'new-sermon-2026-10-11', date: '2026-10-11',
+      id: 'sermon-2026-10-12', slug: 'new-sermon-2026-10-12', date: '2026-10-12',
       title: '새 주일 설교', scripture: '에베소서 4:25', preacher: '확인된 설교자',
       summary: '공개 승인된 설교 설명', youtubeUrl: null, thumbnail: null
     },
     bulletin: {
-      id: 'bulletin-2026-10-11-41', slug: '2026-10-11', date: '2026-10-11',
+      id: 'bulletin-2026-10-12-41', slug: '2026-10-12', date: '2026-10-12',
       issueNumber: '제14권 41호', title: '2026년 10월 11일 주보', description: '공개 승인된 주보 설명',
-      publicFile: null, relatedSermonId: 'sermon-2026-10-11'
+      publicFile: null, relatedSermonId: 'sermon-2026-10-12'
     }
   }
 });
@@ -40,6 +40,23 @@ const bulletinsFile = path.join(tempRoot, 'bulletins.json');
 await writeFile(sermonsFile, `${JSON.stringify(sermons, null, 2)}\n`, 'utf8');
 await writeFile(bulletinsFile, `${JSON.stringify(bulletins, null, 2)}\n`, 'utf8');
 const writeTemp = (data) => writeContentFiles({ ...data, sermonsFile, bulletinsFile });
+const sermonOnlyDraft = () => ({
+  draftStatus: 'APPROVED',
+  approval: {
+    approved: true,
+    approvedBy: 'user-confirmed',
+    approvedAt: '2026-10-13T10:00:00+09:00',
+    publicStatus: 'published',
+    approvalStatus: 'approved'
+  },
+  publicFields: {
+    sermon: {
+      id: 'sermon-2026-10-12', slug: '2026-10-12', date: '2026-10-12',
+      title: 'Approved sermon title', scripture: 'Luke 19:1-10', preacher: 'Approved preacher',
+      summary: 'Approved sermon summary', youtubeUrl: 'https://youtu.be/gTS9neffz9Y', thumbnail: null
+    }
+  }
+});
 
 try {
   await registerApprovedDraft({ draft: approvedDraft(), sermons, bulletins, writeFiles: writeTemp });
@@ -79,8 +96,45 @@ try {
   await assert.rejects(registerApprovedDraft({ draft: failure, sermons, bulletins, writeFiles: async () => { throw new Error('simulated write failure'); } }), /simulated write failure/);
   assert.equal(await readFile(sermonsFile, 'utf8'), unchangedSermons);
   assert.equal(await readFile(bulletinsFile, 'utf8'), unchangedBulletins);
+
+  const sermonOnlyRoot = await mkdtemp(path.join(os.tmpdir(), 'paju-sermon-only-'));
+  const sermonOnlyFile = path.join(sermonOnlyRoot, 'sermons.json');
+  const sermonOnlyBulletins = JSON.stringify(bulletins, null, 2);
+  await writeFile(sermonOnlyFile, `${JSON.stringify(sermons, null, 2)}\n`, 'utf8');
+  try {
+    await registerApprovedSermon({
+      draft: sermonOnlyDraft(),
+      sermons,
+      bulletins,
+      writeFile: (data) => writeSermonFile({ ...data, sermonsFile: sermonOnlyFile })
+    });
+    const sermonOnlyResult = JSON.parse(await readFile(sermonOnlyFile, 'utf8'));
+    assert.equal(sermonOnlyResult.length, sermons.length + 1);
+    assert.equal(await readFile(bulletinsFile, 'utf8'), unchangedBulletins);
+    assert.equal(JSON.stringify(bulletins, null, 2), sermonOnlyBulletins);
+
+    let sermonOnlyWrites = 0;
+    await assert.rejects(
+      registerApprovedSermon({
+        draft: { ...sermonOnlyDraft(), approval: { ...sermonOnlyDraft().approval, approved: false } },
+        sermons,
+        bulletins,
+        writeFile: async () => { sermonOnlyWrites += 1; }
+      }),
+      /Approved sermon registration failed/
+    );
+    assert.equal(sermonOnlyWrites, 0);
+
+    const sermonDuplicate = sermonOnlyDraft();
+    sermonDuplicate.publicFields.sermon.date = '2026-10-04';
+    sermonDuplicate.publicFields.sermon.slug = 'sae-saram-eul-ibeura';
+    await assert.rejects(registerApprovedSermon({ draft: sermonDuplicate, sermons, bulletins, writeFile: async () => { sermonOnlyWrites += 1; } }), /duplicate/);
+    assert.equal(sermonOnlyWrites, 0);
+  } finally {
+    await rm(sermonOnlyRoot, { recursive: true, force: true });
+  }
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }
 
-console.log('register-approved-content tests: PASS (normal, unapproved, duplicate, privacy, link, write failure)');
+console.log('register-approved-content tests: PASS (normal, sermon-only, unapproved, duplicate, privacy, link, write failure)');

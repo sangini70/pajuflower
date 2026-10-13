@@ -8,28 +8,28 @@ const bulletins = await load('bulletins');
 
 const newWeekInput = {
   source: {
-    directory: 'REFERENCE/BULLETINS/2026-10-11',
+    directory: 'REFERENCE/BULLETINS/2026-10-12',
     files: [
-      'bulletin_2026-10-11_p01.jpg',
-      'bulletin_2026-10-11_p02.jpg',
-      'bulletin_2026-10-11_p03.jpg',
-      'bulletin_2026-10-11_p04.jpg'
+      'bulletin_2026-10-12_p01.jpg',
+      'bulletin_2026-10-12_p02.jpg',
+      'bulletin_2026-10-12_p03.jpg',
+      'bulletin_2026-10-12_p04.jpg'
     ]
   },
   extracted: {
     bulletin: {
-      date: '2026-10-11',
+      date: '2026-10-12',
       issueNumber: '제14권 41호',
       title: '2026년 10월 11일 주보',
       description: '사용자 확인 후 공개할 주보 기본 정보입니다.',
-      slug: '2026-10-11'
+      slug: '2026-10-12'
     },
     sermon: {
-      date: '2026-10-11',
+      date: '2026-10-12',
       title: '확인 대기 설교',
       scripture: '확인 필요',
       preacher: '확인 필요',
-      slug: '2026-10-11-sermon'
+      slug: '2026-10-12-sermon'
     }
   },
   evidence: [{ field: 'bulletin.date', sourceFile: 'bulletin_2026-10-11_p01.jpg' }]

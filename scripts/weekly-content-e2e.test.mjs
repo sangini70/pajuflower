@@ -21,28 +21,28 @@ const saveJson = async (file, value) => writeFile(file, `${JSON.stringify(value,
 
 const fakeInput = {
   source: {
-    directory: 'TEST_ONLY_PRIVATE_INPUT/2026-10-11',
+    directory: 'TEST_ONLY_PRIVATE_INPUT/2026-10-12',
     files: ['private-p01.jpg', 'private-p02.jpg', 'private-p03.jpg', 'private-p04.jpg']
   },
   extracted: {
     bulletin: {
-      date: '2026-10-11',
+      date: '2026-10-12',
       issueNumber: 'E2E TEST ONLY ISSUE 999',
       title: 'E2E TEST ONLY Bulletin',
       description: 'E2E TEST ONLY public bulletin description',
-      slug: '2026-10-11',
+      slug: '2026-10-12',
       monthlyTheme: { month: 'E2E TEST ONLY October', title: 'E2E TEST ONLY monthly theme' },
       featuredChurchNews: { title: 'E2E TEST ONLY featured news', description: 'E2E TEST ONLY featured description' },
       worshipSchedule: [{ date: '10.11', prayer: 'E2E TEST ONLY prayer', specialSong: 'E2E TEST ONLY song' }],
       churchNews: [{ title: 'E2E TEST ONLY news', description: 'E2E TEST ONLY news description' }]
     },
     sermon: {
-      date: '2026-10-11',
+      date: '2026-10-12',
       title: 'E2E TEST ONLY Sermon',
       scripture: 'E2E TEST ONLY 1:1',
       preacher: 'E2E TEST ONLY Speaker',
       summary: 'E2E TEST ONLY summary',
-      slug: 'e2e-test-only-sermon-2026-10-11'
+      slug: 'e2e-test-only-sermon-2026-10-12'
     }
   },
   evidence: [{ field: 'sermon.title', sourceFile: 'private-p03.jpg' }]
@@ -86,9 +86,9 @@ const readPublicFiles = async () => {
   const files = [
     'index.html',
     'sermons/index.html',
-    'sermons/e2e-test-only-sermon-2026-10-11/index.html',
+    'sermons/e2e-test-only-sermon-2026-10-12/index.html',
     'bulletins/index.html',
-    'bulletins/2026-10-11/index.html',
+    'bulletins/2026-10-12/index.html',
     'sitemap.xml',
     'robots.txt'
   ];
@@ -157,25 +157,25 @@ try {
     env: { ...process.env, SITE_ORIGIN: 'https://pajuflowergarden.org' }
   });
   const publicFiles = await readPublicFiles();
-  assert.match(publicFiles['sermons/index.html'], /e2e-test-only-sermon-2026-10-11/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /E2E TEST ONLY Sermon/);
-  assert.match(publicFiles['bulletins/index.html'], /2026-10-11/);
-  assert.match(publicFiles['bulletins/2026-10-11/index.html'], /E2E TEST ONLY Bulletin/);
+  assert.match(publicFiles['sermons/index.html'], /e2e-test-only-sermon-2026-10-12/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /E2E TEST ONLY Sermon/);
+  assert.match(publicFiles['bulletins/index.html'], /2026-10-12/);
+  assert.match(publicFiles['bulletins/2026-10-12/index.html'], /E2E TEST ONLY Bulletin/);
   assert.match(publicFiles['index.html'], /E2E TEST ONLY Sermon/);
   assert.match(publicFiles['index.html'], /E2E TEST ONLY Bulletin/);
   assert.match(publicFiles['index.html'], /이번 주 교회 소식/);
   assert.match(publicFiles['index.html'], /E2E TEST ONLY featured news/);
   assert.doesNotMatch(publicFiles['index.html'], /E2E TEST ONLY monthly theme|E2E TEST ONLY prayer|E2E TEST ONLY news/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-11\//);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /property="og:title"/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /Article/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /BreadcrumbList/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
-  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-11/index.html'], /유튜브에서 보기/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /property="og:title"/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /Article/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /BreadcrumbList/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
+  assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /유튜브에서 보기/);
   assert.match(publicFiles['index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
-  assert.match(publicFiles['bulletins/2026-10-11/index.html'], /BreadcrumbList/);
-  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-11\//);
-  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/bulletins\/2026-10-11\//);
+  assert.match(publicFiles['bulletins/2026-10-12/index.html'], /BreadcrumbList/);
+  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
+  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/bulletins\/2026-10-12\//);
   assert.match(publicFiles['robots.txt'], /Sitemap: https:\/\/pajuflowergarden\.org\/sitemap\.xml/);
   for (const [file, content] of Object.entries(publicFiles)) {
     assert.doesNotMatch(content, /TEST_ONLY_PRIVATE_INPUT|private-p0|sourceReference|evidence/i, `private data leaked in ${file}`);
@@ -192,7 +192,7 @@ try {
   ], { cwd: tempRoot });
   await execFileAsync(process.execPath, [path.join(tempScripts, 'copy-static-content.mjs')], { cwd: tempRoot });
   assert.ok(await readFile(path.join(tempRoot, 'vercel-build', 'index.html'), 'utf8'));
-  assert.ok(await readFile(path.join(tempRoot, 'vercel-build', 'sermons', 'e2e-test-only-sermon-2026-10-11', 'index.html'), 'utf8'));
+  assert.ok(await readFile(path.join(tempRoot, 'vercel-build', 'sermons', 'e2e-test-only-sermon-2026-10-12', 'index.html'), 'utf8'));
 
   console.log('weekly-content-e2e: PASS (draft, approval gate, registration, duplicate guard, static pages, metadata, sitemap, privacy)');
 } finally {
