@@ -137,8 +137,39 @@ const checkBulletinDetails = (bulletins, errors) => {
         if (sectionApproved && (item.publicStatus !== 'published' || item.approvalStatus !== 'approved')) errors.push(`${path}.${field}.items[${itemIndex}] must be approved before publication`);
       }
     }
+    if (bulletin.webEdition !== undefined) {
+      const edition = bulletin.webEdition;
+      if (!edition || typeof edition !== 'object' || Array.isArray(edition)) {
+        errors.push(`${path}.webEdition must be an object`);
+      } else {
+        if (edition.publicStatus !== 'published' || edition.approvalStatus !== 'approved') errors.push(`${path}.webEdition must be approved before publication`);
+        if (!Array.isArray(edition.sections) || edition.sections.length === 0) errors.push(`${path}.webEdition.sections must be a non-empty array`);
+        else {
+          const ids = new Set();
+          let previousOrder = 0;
+          for (const [sectionIndex, section] of edition.sections.entries()) {
+            const sectionPath = `${path}.webEdition.sections[${sectionIndex}]`;
+            if (!section || typeof section !== 'object' || Array.isArray(section)) {
+              errors.push(`${sectionPath} must be an object`);
+              continue;
+            }
+            for (const field of ['id', 'type']) if (!isNonEmptyString(section[field])) errors.push(`${sectionPath} missing ${field}`);
+            if (!Number.isInteger(section.sourcePage) || section.sourcePage < 1) errors.push(`${sectionPath} invalid sourcePage`);
+            if (!Number.isInteger(section.sourceOrder) || section.sourceOrder < 1) errors.push(`${sectionPath} invalid sourceOrder`);
+            const order = (section.sourcePage || 0) * 100 + (section.sourceOrder || 0);
+            if (order <= previousOrder) errors.push(`${sectionPath} source order must be increasing`);
+            previousOrder = order;
+            if (ids.has(section.id)) errors.push(`${sectionPath} duplicate id: ${section.id}`);
+            ids.add(section.id);
+            if (section.publicStatus !== 'published' || section.approvalStatus !== 'approved') errors.push(`${sectionPath} must be approved before publication`);
+            checkPublicValue(section, sectionPath, errors);
+          }
+        }
+        if (edition.reviewRequired !== undefined && !Array.isArray(edition.reviewRequired)) errors.push(`${path}.webEdition.reviewRequired must be an array`);
+      }
+    }
     if (bulletin.publicStatus === 'published' && bulletin.approvalStatus === 'approved') {
-      for (const field of ['monthlyTheme', 'featuredChurchNews', 'worshipSchedule', 'churchNews', 'worshipOrder', 'prayerTopics', 'faithGuide']) {
+      for (const field of ['monthlyTheme', 'featuredChurchNews', 'worshipSchedule', 'churchNews', 'worshipOrder', 'prayerTopics', 'faithGuide', 'webEdition']) {
         const value = bulletin[field];
         if (value === undefined) continue;
         if (['worshipOrder', 'prayerTopics', 'faithGuide'].includes(field) && (value.publicStatus !== 'published' || value.approvalStatus !== 'approved')) continue;

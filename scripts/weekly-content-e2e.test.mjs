@@ -78,6 +78,7 @@ const copyFixture = async () => {
   await cp(path.join(projectRoot, 'dist'), tempDist, { recursive: true });
   await cp(path.join(projectRoot, 'templates'), path.join(tempRoot, 'templates'), { recursive: true });
   await cp(path.join(projectRoot, 'scripts', 'generate-static-content.mjs'), path.join(tempScripts, 'generate-static-content.mjs'));
+  await cp(path.join(projectRoot, 'scripts', 'bulletin-layout.mjs'), path.join(tempScripts, 'bulletin-layout.mjs'));
   await cp(path.join(projectRoot, 'scripts', 'validate-content.mjs'), path.join(tempScripts, 'validate-content.mjs'));
   await cp(path.join(projectRoot, 'scripts', 'copy-static-content.mjs'), path.join(tempScripts, 'copy-static-content.mjs'));
 };

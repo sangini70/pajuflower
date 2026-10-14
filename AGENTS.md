@@ -60,7 +60,8 @@ npm run build
 
 - HTML·CSS·SEO·Vite·정적 생성 구조를 조사하거나 수정할 때: `pajuflower-web-maintenance`
 - 설교·주보 초안, 승인, 중복 검증, 정적 등록을 처리할 때: `church-content-publishing`
-- 주보 전용 레이아웃 Skill은 별도 승인과 실제 작업 필요성이 확인되기 전에는 만들거나 사용하지 않는다.
+- 주보 자동 편집·조판 모델, A4 배치, 인쇄·반응형 렌더링, 보존 검증을 설계하거나 구현할 때: `church-bulletin-layout-engine`
+- 주보 전용 레이아웃 Skill은 일반 웹 유지보수나 콘텐츠 발행을 대신하지 않으며, 실제 레이아웃 엔진 작업에만 사용한다.
 
 ## Git과 배포
 

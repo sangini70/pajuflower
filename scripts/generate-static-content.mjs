@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertValidContent } from './validate-content.mjs';
+import { createBulletinDocument, renderBulletinDocument } from './bulletin-layout.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -14,6 +15,7 @@ const shellTemplate = await readFile(path.join(root, 'templates', 'content-shell
 assertValidContent({ sermons, bulletins });
 
 const isPublic = (item) => item.publicStatus === 'published' && item.approvalStatus === 'approved';
+const approvedDetail = isPublic;
 const newestFirst = (a, b) => b.date.localeCompare(a.date) || String(a.id || a.slug).localeCompare(String(b.id || b.slug));
 const publicSermons = sermons.filter(isPublic).sort(newestFirst);
 const publicBulletins = bulletins.filter(isPublic).sort(newestFirst);
@@ -115,43 +117,10 @@ const sermonDetail = (sermon) => {
   });
 };
 
-const approvedDetail = (item) => item?.publicStatus === 'published' && item?.approvalStatus === 'approved';
-const approvedSectionItems = (section) => {
-  if (Array.isArray(section)) return section.filter(approvedDetail);
-  if (!approvedDetail(section) || !Array.isArray(section.items)) return [];
-  return section.items.filter(approvedDetail);
-};
-const bulletinSection = (title, content) => content ? `<section class="bulletin-section"><h2>${escapeHtml(title)}</h2>${content}</section>` : '';
-const bulletinPage = (number, title, content) => `<section class="bulletin-page" aria-labelledby="bulletin-page-${number}"><p class="bulletin-page-label">PAGE ${number}</p><h2 id="bulletin-page-${number}">${escapeHtml(title)}</h2>${content}</section>`;
-const bulletinList = (items, renderer) => items.length ? `<ul class="bulletin-list">${items.map((item) => `<li>${renderer(item)}</li>`).join('')}</ul>` : '';
-const bulletinOrderSection = (bulletin) => {
-  const items = approvedSectionItems(bulletin.worshipOrder);
-  return bulletinSection('주일예배 순서', bulletinList(items, (item) => `<strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.content)}${item.response ? ` · ${escapeHtml(item.response)}` : ''}</span>`));
-};
-const bulletinNewsSection = (bulletin) => {
-  const items = approvedSectionItems(bulletin.churchNews);
-  return bulletinSection('교회 소식', bulletinList(items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`));
-};
-const bulletinScheduleSection = (bulletin) => {
-  const items = approvedSectionItems(bulletin.worshipSchedule);
-  if (!items.length) return '';
-  const rows = items.map((item) => `<div class="bulletin-table-row"><span>${escapeHtml(item.date)}</span><span>${escapeHtml(item.prayer)}</span><span>${escapeHtml(item.specialSong)}</span></div>`).join('');
-  return bulletinSection('예배 기도 및 특송 일정', `<div class="bulletin-table" role="table" aria-label="예배 기도 및 특송 일정"><div class="bulletin-table-row bulletin-table-head" role="row"><span>날짜</span><span>기도</span><span>특송</span></div>${rows}</div>`);
-};
-const bulletinTextSection = (bulletin, field, title) => {
-  const items = approvedSectionItems(bulletin[field]);
-  return bulletinSection(title, bulletinList(items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`));
-};
-
 const bulletinDetail = (bulletin) => {
   const sermon = sermonById.get(bulletin.relatedSermonId);
-  const sermonSection = sermon ? bulletinSection('설교', `<dl class="content-meta bulletin-sermon-meta"><div><dt>제목</dt><dd>${escapeHtml(sermon.title)}</dd></div><div><dt>성경 본문</dt><dd>${escapeHtml(sermon.scripture)}</dd></div><div><dt>설교자</dt><dd>${escapeHtml(sermon.preacher)}</dd></div></dl>`) : '';
-  const theme = approvedDetail(bulletin.monthlyTheme) ? bulletinSection('이번 달 안내', `<div class="bulletin-theme"><strong>${escapeHtml(bulletin.monthlyTheme.month)}</strong><span>${escapeHtml(bulletin.monthlyTheme.title)}</span></div>`) : '';
-  const page1 = bulletinPage(1, '교회 및 주보 기본 정보', `<dl class="content-meta"><div><dt>주보 날짜</dt><dd>${escapeHtml(bulletin.date)}</dd></div><div><dt>호수</dt><dd>${escapeHtml(bulletin.issueNumber)}</dd></div></dl><p>${escapeHtml(bulletin.description)}</p>`);
-  const page2 = bulletinPage(2, '교회 소식과 안내', [theme, bulletinNewsSection(bulletin), bulletinScheduleSection(bulletin), bulletinTextSection(bulletin, 'faithGuide', '신앙생활을 위한 10가지 믿음의 행동')].join(''));
-  const page3 = bulletinPage(3, '설교 말씀', `${sermonSection}${sermon ? `<p class="bulletin-sermon-summary">${escapeHtml(sermon.summary)}</p>` : ''}`);
-  const page4 = bulletinPage(4, '예배 순서와 기도 안내', [bulletinOrderSection(bulletin), bulletinTextSection(bulletin, 'prayerTopics', '교회 기도 제목')].join(''));
-  const details = `${page1}${page2}${page3}${page4}`;
+  const document = createBulletinDocument(bulletin, sermon);
+  const { html: details } = renderBulletinDocument(document);
   return shell({
     title: `${bulletin.title} | 파주꽃동산교회 주보`,
     description: `${bulletin.date} ${bulletin.issueNumber} 파주꽃동산교회 주보`,
@@ -162,7 +131,7 @@ const bulletinDetail = (bulletin) => {
       { name: '주보 아카이브', pathname: '/bulletins/' },
       { name: bulletin.title, pathname: `/bulletins/${bulletin.slug}/` }
     ])],
-    body: `<article class="content-detail bulletin-detail"><p class="content-eyebrow">주보 · ${escapeHtml(bulletin.date)}</p><h1>${escapeHtml(bulletin.title)}</h1><p class="bulletin-related">관련 설교: ${sermon ? escapeHtml(sermon.title) : '확인 중'}</p>${details}</article>`
+    body: `<article class="content-detail bulletin-detail">${details}</article>`
   });
 };
 

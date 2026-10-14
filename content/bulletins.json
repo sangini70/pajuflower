@@ -5,11 +5,11 @@
     "date": "2026-10-04",
     "issueNumber": "제14권 40호",
     "title": "2026년 10월 4일 주보",
-    "description": "파주꽃동산교회 2026년 10월 4일 주보의 공개 승인된 기본 정보입니다.",
+    "description": "2026년 10월 4일 파주꽃동산교회 주보",
     "publicFile": null,
     "sourceReference": "REFERENCE/BULLETINS/2026-10-04/bulletin_2026-10-04_p01.jpg",
     "relatedSermonId": "sermon-2026-10-04",
-    "privacyReview": "approved-for-metadata-only",
+    "privacyReview": "approved-for-web-edition",
     "publicStatus": "published",
     "approvalStatus": "approved",
     "archiveStatus": "current",
@@ -113,6 +113,267 @@
         { "title": "12", "description": "파주꽃동산교회의 부흥을 위해서", "publicStatus": "published", "approvalStatus": "approved" }
       ]
     },
-    "updatedAt": "2026-10-10"
+    "webEdition": {
+      "publicStatus": "published",
+      "approvalStatus": "approved",
+      "sections": [
+        {
+          "id": "cover-identity",
+          "sourcePage": 1,
+          "sourceOrder": 1,
+          "type": "cover",
+          "churchName": "파주꽃동산교회",
+          "issueNumber": "제14권 40호",
+          "establishedDate": "교회설립일 2013.1.12",
+          "date": "2026.10.04",
+          "proclamation": "할렐루야! 예수 다시 사셨네!",
+          "verse": "예수께서 이르시되 나는 부활이요 생명이니 나를 믿는 자는 죽어도 살겠고",
+          "verseReference": "(요 11:25)",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-service-roles",
+          "sourcePage": 1,
+          "sourceOrder": 2,
+          "type": "table",
+          "columns": [],
+          "rows": [
+            ["은퇴 장로", "정덕환", "반주자", "김희겸"],
+            ["주일학교 전도사", "최민솔", "방송영상", "최예슬"],
+            ["파주노아선교단", "최민솔", "강단미화", "이병자"],
+            ["꽃동산축구선교단", "최다솔", "안내", "여성목장"]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-location",
+          "sourcePage": 1,
+          "sourceOrder": 3,
+          "type": "text-list",
+          "items": [
+            "담임목사 최철민",
+            "경기도 파주시 미래로 602번길 27, 태운플라자 7층(10895)",
+            "-가람마을 2단지 정문 롯데슈퍼 앞 운정수산 7층-",
+            "어린이를 사랑하는 대한예수교 장로회 파주꽃동산교회"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-news",
+          "sourcePage": 2,
+          "sourceOrder": 1,
+          "type": "numbered-list",
+          "title": "교회 소식",
+          "items": [
+            {"number": "1", "lines": ["예배를 위해 20분 전에 오셔서 기도와 찬양으로 준비합시다.", "교회 새로 나오신 성도님들을 환영합니다. 등록카드를 작성해서 제출해 주세요."]},
+            {"number": "2", "lines": ["2026년 교회 표어: ‘빛과 소금의 사명을 이루는 교회(마 5:13-14)’입니다.", "주제성구: 너희는 세상의 소금이니 소금이 만일 그 맛을 잃으면 무엇으로 짜게 하리요 후에는 아무 쓸 데 없어 다만 밖에 버려져 사람에게 밟힐 뿐이니라 너희는 세상의 빛이라 산 위에 있는 동네가 숨겨지지 못할 것이요"]},
+            {"number": "4", "lines": ["헌물: 빵"]},
+            {"number": "5", "lines": ["2026년 10월은 <몸과 마음을 새롭게 하는 달입니다.>"]},
+            {"number": "6", "lines": ["행복일자리운동본부 이전감사예배", "일시: 2026.11.6.(화) 오전 11시 / 장소: 파주시 미래로 623, 3층"]},
+            {"number": "7", "lines": ["가을대심방이 시작됩니다. 기도로 준비해 주세요."]}
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-event-schedule",
+          "sourcePage": 2,
+          "sourceOrder": 2,
+          "type": "table",
+          "title": "3. 교회 행사와 예배 기도자, 특송",
+          "columns": ["날짜", "기도", "특송"],
+          "rows": [
+            ["10.04(주) 주일예배", "박상연 집사", "여성목장"],
+            ["10.11(주) 주일예배", "박순자 권사", "다함께"],
+            ["10.18(주) 주일예배", "신화자 권사", "다함께"],
+            ["10.25(주) 종교개혁주일", "김상인 집사", "다함께"]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "prayer-topics-full",
+          "sourcePage": 2,
+          "sourceOrder": 3,
+          "type": "numbered-list",
+          "title": "파주꽃동산교회의 기도제목",
+          "items": [
+            {"number": "1", "lines": ["하나님을 사랑하고, 이웃을 사랑하는 성도가 되게 하소서."]},
+            {"number": "2", "lines": ["평화통일과 군복무 중에 있는 형제들을 위해서, 나라의 지도자를 위해서"]},
+            {"number": "3", "lines": ["선교사님들을 위해서(권영민, 이정욱 선교사 가정)"]},
+            {"number": "4", "lines": ["소그룹을 위한 기도(남성목장, 여성목장, 청년부, 중고등부, 어린이부)"]},
+            {"number": "5", "lines": ["가족을 향한 기도(구원사역, 건강, 자녀, 손주, 경제, 진로)"]},
+            {"number": "6", "lines": ["꽃동산지역아동센터 사역을 위해서(34명 아동, 10명 교사)"]},
+            {"number": "7", "lines": ["파주노아선교단, 꽃동산축구선교단을 위해서"]},
+            {"number": "8", "lines": ["성령충만과 사명감당을 위해서"]},
+            {"number": "9", "lines": ["복음을 전하는 전도자가 되게 하소서."]},
+            {"number": "10", "lines": ["담임목사의 가정과 사역을 위해서"]},
+            {"number": "11", "lines": ["성도들의 건강과 회복을 위해서"]},
+            {"number": "12", "lines": ["파주꽃동산교회의 부흥을 위해서"]}
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "faith-guide-full",
+          "sourcePage": 2,
+          "sourceOrder": 4,
+          "type": "numbered-list",
+          "title": "신앙생활을 위한 10가지 믿음의 행동",
+          "items": [
+            {"number": "1", "lines": ["온전한 주일성수"]}, {"number": "2", "lines": ["온전한 십일조 드리기"]}, {"number": "3", "lines": ["매일 성경읽기 / 성경쓰기"]}, {"number": "4", "lines": ["응답받는 기도생활하기"]}, {"number": "5", "lines": ["가정예배 드리기"]}, {"number": "6", "lines": ["경건서적 읽기"]}, {"number": "7", "lines": ["목장모임 참석하기"]}, {"number": "8", "lines": ["이웃사랑으로 봉사하기"]}, {"number": "9", "lines": ["영혼구원을 위해 전도하기"]}, {"number": "10", "lines": ["세계를 품고 선교하기"]}
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sermon-manuscript",
+          "sourcePage": 3,
+          "sourceOrder": 1,
+          "type": "article",
+          "title": "새 사람을 입으라",
+          "paragraphs": [
+            "아름다운 계절 가을이 왔습니다. 10월은 가을의 중심이 되는 달입니다. 단풍이 물들고, 코스모스가 피고, 맑은 푸른 하늘을 보게 됩니다. 교회력에는 10월 25일 주일은 종교개혁주일입니다. 종교개혁주일이 있는 10월은 신앙생활을 다시 새롭게 하는 달이 되었으면 합니다. 새로운 사람이 되는 것이 중요합니다. 그렇다면 무엇이 새로워져야 할까요?"
+          ],
+          "subsections": [
+            {"title": "첫째, 옛 사람을 벗어 버려야 합니다.(22절)", "paragraphs": ["사람들은 후회하며 살아갑니다. 과거에 하지 못한 일, 했던 일에 대한 후회를 품고 살아갑니다. 때로는 과거에 잘못한 일로 인해서 현재를 살지 못하는 일도 있습니다. 과거에 묶여 사는 것입니다. 우리의 성품은 죄로 인해 죄성을 가지고 있습니다. 그래서 유혹의 욕심을 벗어나지 못하고 잘못된 습관에 매여 사는 경우가 있습니다. 그래서 성경은 옛 사람을 벗어 버리라고 명령합니다."]},
+            {"title": "둘째, 심령이 새롭게 되어야 합니다.(23절)", "paragraphs": ["과거를 벗어나 새로운 사람이 되려면 심령이 새로워져야 합니다. 마음이 새로워지는 것은 생각을 바꾸는 것입니다. 나쁜 생각을 하면 나쁜 습관이 자리를 잡습니다. 심령이 새로워지기 위해서는 하나님의 말씀으로 자신을 돌아보는 것입니다. 세상의 기준은 바뀌게 되어 있습니다. 그러나 하나님의 말씀은 불변합니다. 나의 생각과 마음을 매일 하나님의 말씀으로 돌아볼 때 우리의 심령은 새로워지게 됩니다."]},
+            {"title": "셋째, 의와 진리의 거룩함을 추구해야 합니다.", "paragraphs": ["의를 추구하는 삶은 하나님과의 관계와 사람과의 관계를 바르게 유지하는 것을 의미합니다. 의를 추구하는 삶은 하나님의 주권을 인정하는 삶이고, 이웃과의 관계 속에서 정직하며 사회적 약자를 배려하는 책임이 있는 삶을 말합니다. 진리를 추구하는 삶이란 세상의 가치관을 벗어 버리고 성경적인 가치관을 가지고 살아가는 것입니다. 거룩이라는 단어는 구별되었다는 뜻입니다. 우리는 세상 속에서 살지만 세상에 동화되지 않고 구별된 삶을 살아야 합니다."]}
+          ],
+          "conclusion": "종교개혁주일을 준비하면서 우리는 옛사람을 벗어 버리고, 심령이 새롭게 되어, 거룩함을 추구하는 삶을 살아야 합니다.",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "memory-verse",
+          "sourcePage": 3,
+          "sourceOrder": 2,
+          "type": "verse",
+          "title": "이번주 말씀 암송",
+          "text": "너희는 유혹의 욕심을 따라 썩어져 가는 구습을 따르는 옛 사람을 벗어 버리고 오직 너희의 심령이 새롭게 되어 하나님을 따라 의와 진리의 거룩함으로 지으심을 받은 새 사람을 입으라",
+          "reference": "(에베소서 4:22-24)",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "missionaries-public",
+          "sourcePage": 3,
+          "sourceOrder": 3,
+          "type": "text-list",
+          "title": "우리가 섬기는 선교사",
+          "items": [
+            "네팔: 이정욱 정혜림 선교사", "1. 네팔의 영적인 부흥을 위해", "2. 네팔 한인교회를 위해",
+            "베트남: 권영민 이민경 선교사", "1. 베트남의 영적인 부흥을 위해", "2. 한국어학원을 통한 선교를 위해"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-worship",
+          "sourcePage": 4,
+          "sourceOrder": 1,
+          "type": "service",
+          "title": "주일낮예배",
+          "subtitle": "<할렐루야 하나님을 예배합니다>",
+          "facts": ["오후 3:30", "인도 담임목사", "하나님은 영이시니 예배하는 자가 영과 진리로 예배할지니라."],
+          "columns": [],
+          "leadingMarker": true,
+          "rows": [
+            ["*", "묵상기도", "", "다같이"], ["*", "기원", "", "인도자"], ["*", "개회찬송", "아무도 예배하지 않는", "다같이"], ["*", "성시교독", "40. 시편 96편", "다같이"], ["*", "신앙고백", "", "다같이"], ["", "찬송", "273장", "다같이"], ["", "감사와 참회의 기도", "", "다같이"], ["", "기도", "", "박상연 집사"], ["", "주기도문", "", "다같이"], ["", "성경봉독", "에베소서 4:22-24", "다같이"], ["", "특송", "435장", "여성목장"], ["", "말씀선포", "새 사람을 입으라", "담임목사"], ["", "헌금찬송", "436장", "다같이"], ["", "교회광고", "", "담임목사"], ["*", "폐회송", "세상의 유혹 시험이", "다같이"], ["*", "축도", "", "담임목사"]
+          ],
+          "footnote": "* 는 다함께 일어납니다.",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-group-meetings",
+          "sourcePage": 4,
+          "sourceOrder": 2,
+          "type": "table",
+          "title": "주일 목장 모임 4:30",
+          "columns": [],
+          "rows": [["여성목장", "교육관"], ["남성목장", "교육관"], ["청년목장", "교육관"]],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "next-week-volunteers",
+          "sourcePage": 4,
+          "sourceOrder": 3,
+          "type": "table",
+          "title": "다음 주 봉사자",
+          "subtitle": "<주안에서 사랑합니다.>",
+          "columns": [],
+          "rows": [["10월 안내", "전남담 집사"], ["11월 안내", "장명희 집사"]],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-school",
+          "sourcePage": 4,
+          "sourceOrder": 4,
+          "type": "table",
+          "title": "주일학교 오전 9:30",
+          "subtitle": "오전 9:30 / 최민솔 전도사",
+          "columns": ["예배위원", "기도자", "헌금위원"],
+          "rows": [["10.04", "안지후", "김시우"], ["10.11", "이현우", "이다은"], ["10.18", "안시연", "안시우"], ["10.25", "강우연", "이충현"], ["성경말씀", "하브루타 성경읽기", ""], ["말씀", "최민솔 전도사", ""]],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "middle-school-study",
+          "sourcePage": 4,
+          "sourceOrder": 5,
+          "type": "table",
+          "title": "중고등부 성경공부 모임",
+          "columns": [],
+          "rows": [["시간", "4:30"], ["장소", "본당"], ["내용", "신앙기초 세우기"], ["인도", "최철민 목사"]],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "wednesday-prayer",
+          "sourcePage": 4,
+          "sourceOrder": 6,
+          "type": "table",
+          "title": "수요 기도회",
+          "subtitle": "저녁 8:00 / 인도: 최철민 목사",
+          "columns": [],
+          "rows": [["찬송", "다같이"], ["기도", "다같이"], ["찬송", "다같이"], ["성경봉독", "인도자"], ["말씀", "인도자"], ["마태복음 강해", ""], ["찬송", "다같이"], ["주기도문", "다같이"]],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "friday-prayer",
+          "sourcePage": 4,
+          "sourceOrder": 7,
+          "type": "text-list",
+          "title": "금요 기도회",
+          "items": ["너는 내게 부르짖으라", "금요일 오후 9:00"],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "dawn-prayer",
+          "sourcePage": 4,
+          "sourceOrder": 8,
+          "type": "text-list",
+          "title": "새벽 기도회 (월-금)",
+          "items": ["누가복음 강해", "새벽 5:30"],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        }
+      ],
+      "reviewRequired": [
+        {"sourcePage": 1, "item": "개인 전화번호 및 이메일", "reason": "개인 연락처"},
+        {"sourcePage": 3, "item": "선교사 자녀 이름", "reason": "가족 개인식별 정보"},
+        {"sourcePage": 3, "item": "선교사 가족의 건강 및 교통사고 회복 기도", "reason": "민감한 가족·건강 정보"},
+        {"sourcePage": 3, "item": "목회자 사진", "reason": "별도 사진 공개 승인 확인 필요"}
+      ]
+    },
+    "updatedAt": "2026-10-14"
   }
 ]
