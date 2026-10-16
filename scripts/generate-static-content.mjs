@@ -14,7 +14,7 @@ const shellTemplate = await readFile(path.join(root, 'templates', 'content-shell
 
 assertValidContent({ sermons, bulletins });
 
-const isPublic = (item) => item.publicStatus === 'published' && item.approvalStatus === 'approved';
+const isPublic = (item) => item?.publicStatus === 'published' && item?.approvalStatus === 'approved';
 const approvedDetail = isPublic;
 const newestFirst = (a, b) => b.date.localeCompare(a.date) || String(a.id || a.slug).localeCompare(String(b.id || b.slug));
 const publicSermons = sermons.filter(isPublic).sort(newestFirst);

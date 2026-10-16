@@ -11,7 +11,7 @@ const errorsFor = (sermons = baseSermons, bulletins = baseBulletins) => validate
 
 assert.deepEqual(errorsFor(), [], 'normal content must pass');
 assert.equal(baseSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 2);
-assert.equal(baseBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 1);
+assert.equal(baseBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 2);
 
 const restoredBulletin = baseBulletins.find((item) => item.slug === '2026-10-04');
 const restoredSermon = baseSermons.find((item) => item.id === restoredBulletin.relatedSermonId);
@@ -38,6 +38,23 @@ assert.match(restoredHtml, /아름다운 계절 가을이 왔습니다/);
 assert.match(restoredHtml, /중고등부 성경공부 모임/);
 assert.doesNotMatch(restoredHtml, /공개 승인된 기본 정보|주보 원본에서 확인된|관련 설교/);
 assert.doesNotMatch(restoredHtml, /010-9292-3405|jmark@hanmail\.net|교통사고 회복/);
+
+const octoberEleventhBulletin = baseBulletins.find((item) => item.slug === '2026-10-11');
+assert.ok(octoberEleventhBulletin, 'approved 2026-10-11 bulletin must be present');
+assert.equal(octoberEleventhBulletin.relatedSermonId, 'sermon-2026-10-11');
+assert.equal(octoberEleventhBulletin.webEdition.sections.length, 21);
+assert.equal(octoberEleventhBulletin.webEdition.sections.find((section) => section.id === 'sunday-school-schedule').rows.at(-1)[0], '11.04');
+assert.equal(octoberEleventhBulletin.webEdition.sections.find((section) => section.id === 'church-event-schedule').rows[2][2], '정덕환 장로');
+const octoberEleventhSermon = baseSermons.find((item) => item.id === octoberEleventhBulletin.relatedSermonId);
+const octoberEleventhHtml = renderBulletinDocument(createBulletinDocument(octoberEleventhBulletin, octoberEleventhSermon)).html;
+assert.match(octoberEleventhHtml, /삭개오/);
+assert.match(octoberEleventhHtml, /11\.04/);
+assert.match(octoberEleventhHtml, /정덕환 장로/);
+assert.match(octoberEleventhHtml, /&lt;파주꽃동산교회의 기도제목&gt;/);
+assert.match(octoberEleventhHtml, /&lt;신앙생활을 위한 10가지 믿음의 행동&gt;/);
+assert.match(octoberEleventhHtml, /&lt;새사람이 된 삭개오&gt;/);
+assert.equal((octoberEleventhHtml.match(/bulletin-table-head/g) || []).length, 2, 'only source tables with printed column headings should render headers');
+assert.doesNotMatch(octoberEleventhHtml, /010-9292-3405|jmark@hanmail\.net|이로은|이로운|권한진|권예진|권은진|교통사고/);
 
 const duplicateSermons = clone(baseSermons);
 duplicateSermons.push({ ...clone(baseSermons[0]), id: 'sermon-duplicate' });
@@ -76,7 +93,7 @@ pendingBulletins[0].publicStatus = 'pending';
 pendingBulletins[0].approvalStatus = 'pending';
 assert.deepEqual(errorsFor(pendingSermons, pendingBulletins), [], 'pending content may be stored but must validate');
 assert.equal(pendingSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 1);
-assert.equal(pendingBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 0);
+assert.equal(pendingBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 1);
 
 const privateLeak = clone(baseSermons);
 privateLeak[0].summary = '문의: 010-1234-5678';

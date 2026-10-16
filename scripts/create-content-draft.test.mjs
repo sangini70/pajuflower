@@ -19,7 +19,7 @@ const newWeekInput = {
   extracted: {
     bulletin: {
       date: '2026-10-12',
-      issueNumber: '제14권 41호',
+      issueNumber: '제14권 42호',
       title: '2026년 10월 11일 주보',
       description: '사용자 확인 후 공개할 주보 기본 정보입니다.',
       slug: '2026-10-12'

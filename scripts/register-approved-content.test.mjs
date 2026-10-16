@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { registerApprovedDraft, registerApprovedSermon, writeContentFiles, writeSermonFile } from './register-approved-content.mjs';
+import { registerApprovedBulletin, registerApprovedDraft, registerApprovedSermon, writeBulletinFile, writeContentFiles, writeSermonFile } from './register-approved-content.mjs';
 
 const load = async (name) => JSON.parse(await readFile(new URL(`../content/${name}.json`, import.meta.url), 'utf8'));
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -28,7 +28,7 @@ const approvedDraft = () => ({
     },
     bulletin: {
       id: 'bulletin-2026-10-12-41', slug: '2026-10-12', date: '2026-10-12',
-      issueNumber: '제14권 41호', title: '2026년 10월 11일 주보', description: '공개 승인된 주보 설명',
+      issueNumber: '제14권 42호', title: '2026년 10월 12일 주보', description: '공개 승인된 주보 설명',
       publicFile: null, relatedSermonId: 'sermon-2026-10-12'
     }
   }
@@ -57,6 +57,38 @@ const sermonOnlyDraft = () => ({
     }
   }
 });
+const bulletinOnlyDraft = () => ({
+  draftStatus: 'APPROVED',
+  approval: {
+    approved: true,
+    approvedBy: 'user-confirmed',
+    approvedAt: '2026-10-16T18:38:00+09:00',
+    publicStatus: 'published',
+    approvalStatus: 'approved',
+    approvedSectionIds: ['church-news']
+  },
+  source: { directory: 'REFERENCE/BULLETINS/2026-10-11' },
+  publicFields: {
+    bulletin: {
+    id: 'bulletin-2026-10-12', slug: '2026-10-12', date: '2026-10-12',
+      issueNumber: '제14권 42호', title: '2026년 10월 12일 주보', description: '교회 주보',
+      publicFile: null, relatedSermonId: 'sermon-2026-10-12',
+      webEdition: {
+        sections: [{
+          id: 'church-news', type: 'numbered-list', sourcePage: 2, sourceOrder: 1,
+          title: '교회 소식', items: [{ number: '1', lines: ['공개 승인된 소식'] }],
+          publicStatus: 'pending', approvalStatus: 'pending', sourcePaths: ['REFERENCE/private.jpg']
+        }],
+        reviewRequired: [{ item: 'private review data' }]
+      }
+    }
+  }
+});
+const bulletinTestSermons = [...sermons, {
+  id: 'sermon-2026-10-12', slug: 'sermon-2026-10-12', date: '2026-10-12',
+  title: 'Isolated test sermon', scripture: 'Test 1:1', preacher: 'Test preacher',
+  publicStatus: 'published', approvalStatus: 'approved'
+}];
 
 try {
   await registerApprovedDraft({ draft: approvedDraft(), sermons, bulletins, writeFiles: writeTemp });
@@ -133,8 +165,54 @@ try {
   } finally {
     await rm(sermonOnlyRoot, { recursive: true, force: true });
   }
+
+  const bulletinOnlyRoot = await mkdtemp(path.join(os.tmpdir(), 'paju-bulletin-only-'));
+  const bulletinOnlyFile = path.join(bulletinOnlyRoot, 'bulletins.json');
+  await writeFile(bulletinOnlyFile, `${JSON.stringify(bulletins, null, 2)}\n`, 'utf8');
+  const unchangedSermonData = JSON.stringify(sermons, null, 2);
+  try {
+    await registerApprovedBulletin({
+      draft: bulletinOnlyDraft(), sermons: bulletinTestSermons, bulletins,
+      writeFile: (data) => writeBulletinFile({ ...data, bulletinsFile: bulletinOnlyFile })
+    });
+    const registeredBulletins = JSON.parse(await readFile(bulletinOnlyFile, 'utf8'));
+    const registered = registeredBulletins.at(-1);
+    assert.equal(registeredBulletins.length, bulletins.length + 1);
+    assert.equal(registered.webEdition.publicStatus, 'published');
+    assert.equal(registered.webEdition.sections[0].approvalStatus, 'approved');
+    assert.equal(Object.hasOwn(registered.webEdition, 'reviewRequired'), false);
+    assert.equal(Object.hasOwn(registered.webEdition.sections[0], 'sourcePaths'), false);
+    assert.equal(JSON.stringify(sermons, null, 2), unchangedSermonData);
+
+    let bulletinWrites = 0;
+    const mismatchedApproval = bulletinOnlyDraft();
+    mismatchedApproval.approval.approvedSectionIds = [];
+    await assert.rejects(registerApprovedBulletin({ draft: mismatchedApproval, sermons: bulletinTestSermons, bulletins, writeFile: async () => { bulletinWrites += 1; } }), /approvedSectionIds/);
+    const unapproved = bulletinOnlyDraft();
+    unapproved.approval.approved = false;
+    await assert.rejects(registerApprovedBulletin({ draft: unapproved, sermons: bulletinTestSermons, bulletins, writeFile: async () => { bulletinWrites += 1; } }), /registration failed/);
+    const invalidLink = bulletinOnlyDraft();
+    invalidLink.publicFields.bulletin.relatedSermonId = 'missing-sermon';
+    await assert.rejects(registerApprovedBulletin({ draft: invalidLink, sermons: bulletinTestSermons, bulletins, writeFile: async () => { bulletinWrites += 1; } }), /related sermon not found/);
+    const duplicateBulletin = bulletinOnlyDraft();
+    duplicateBulletin.publicFields.bulletin.date = '2026-10-04';
+    duplicateBulletin.publicFields.bulletin.slug = '2026-10-04';
+    duplicateBulletin.publicFields.bulletin.issueNumber = '제14권 40호';
+    duplicateBulletin.publicFields.bulletin.relatedSermonId = 'sermon-2026-10-04';
+    await assert.rejects(registerApprovedBulletin({ draft: duplicateBulletin, sermons: bulletinTestSermons, bulletins, writeFile: async () => { bulletinWrites += 1; } }), /duplicate/);
+    const privateContent = bulletinOnlyDraft();
+    privateContent.publicFields.bulletin.webEdition.sections[0].items[0].lines.push('문의 010-1234-5678');
+    await assert.rejects(registerApprovedBulletin({ draft: privateContent, sermons: bulletinTestSermons, bulletins, writeFile: async () => { bulletinWrites += 1; } }), /phone-like/);
+    assert.equal(bulletinWrites, 0);
+
+    const beforeWriteFailure = await readFile(bulletinOnlyFile, 'utf8');
+    await assert.rejects(registerApprovedBulletin({ draft: bulletinOnlyDraft(), sermons: bulletinTestSermons, bulletins, writeFile: async () => { throw new Error('simulated bulletin write failure'); } }), /simulated bulletin write failure/);
+    assert.equal(await readFile(bulletinOnlyFile, 'utf8'), beforeWriteFailure);
+  } finally {
+    await rm(bulletinOnlyRoot, { recursive: true, force: true });
+  }
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }
 
-console.log('register-approved-content tests: PASS (normal, sermon-only, unapproved, duplicate, privacy, link, write failure)');
+console.log('register-approved-content tests: PASS (both, sermon-only, bulletin-only, section approval, unapproved, duplicate, privacy, link, write failure)');

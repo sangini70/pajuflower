@@ -41,16 +41,19 @@ const requiredPublicFields = (draft, scope = 'both') => {
   const errors = [];
   const sermon = draft?.publicFields?.sermon;
   const bulletin = draft?.publicFields?.bulletin;
-  for (const field of ['id', 'slug', 'date', 'title', 'scripture', 'preacher']) if (!isText(sermon?.[field])) errors.push(`publicFields.sermon.${field} is required`);
   if (scope === 'sermon') {
+    for (const field of ['id', 'slug', 'date', 'title', 'scripture', 'preacher']) if (!isText(sermon?.[field])) errors.push(`publicFields.sermon.${field} is required`);
     if (sermon?.date && !DATE_PATTERN.test(sermon.date)) errors.push('publicFields.sermon.date is invalid');
     return errors;
   }
+  if (scope !== 'bulletin') {
+    for (const field of ['id', 'slug', 'date', 'title', 'scripture', 'preacher']) if (!isText(sermon?.[field])) errors.push(`publicFields.sermon.${field} is required`);
+  }
   for (const field of ['id', 'slug', 'date', 'issueNumber', 'title', 'description', 'relatedSermonId']) if (!isText(bulletin?.[field])) errors.push(`publicFields.bulletin.${field} is required`);
-  if (sermon?.date && !DATE_PATTERN.test(sermon.date)) errors.push('publicFields.sermon.date is invalid');
+  if (scope !== 'bulletin' && sermon?.date && !DATE_PATTERN.test(sermon.date)) errors.push('publicFields.sermon.date is invalid');
   if (bulletin?.date && !DATE_PATTERN.test(bulletin.date)) errors.push('publicFields.bulletin.date is invalid');
-  if (sermon?.date && bulletin?.date && sermon.date !== bulletin.date) errors.push('sermon and bulletin dates must match');
-  if (sermon?.id && bulletin?.relatedSermonId && sermon.id !== bulletin.relatedSermonId) errors.push('bulletin must link to the registered sermon');
+  if (scope === 'both' && sermon?.date && bulletin?.date && sermon.date !== bulletin.date) errors.push('sermon and bulletin dates must match');
+  if (scope === 'both' && sermon?.id && bulletin?.relatedSermonId && sermon.id !== bulletin.relatedSermonId) errors.push('bulletin must link to the registered sermon');
   return errors;
 };
 
@@ -160,12 +163,76 @@ const publicOnly = (draft) => {
   return { sermon, bulletin };
 };
 
+const PUBLIC_WEB_SECTION_FIELDS = new Set([
+  'id', 'sourcePage', 'sourceOrder', 'type', 'title', 'subtitle', 'churchName',
+  'issueNumber', 'establishedDate', 'date', 'columns', 'rows', 'items',
+  'paragraphs', 'subsections', 'facts', 'leadingMarker', 'footnote', 'text',
+  'reference', 'conclusion'
+]);
+
+const approvedWebEdition = (draft) => {
+  const source = draft.publicFields.bulletin.webEdition;
+  if (!source || !Array.isArray(source.sections) || source.sections.length === 0) return null;
+  return {
+    publicStatus: 'published',
+    approvalStatus: 'approved',
+    sections: source.sections.map((section) => {
+      const publicSection = {};
+      for (const [key, value] of Object.entries(section)) {
+        if (PUBLIC_WEB_SECTION_FIELDS.has(key)) publicSection[key] = value;
+      }
+      publicSection.publicStatus = 'published';
+      publicSection.approvalStatus = 'approved';
+      return publicSection;
+    })
+  };
+};
+
+const webEditionApprovalErrors = (draft) => {
+  const errors = [];
+  const edition = draft?.publicFields?.bulletin?.webEdition;
+  const sections = edition?.sections;
+  const approvedIds = draft?.approval?.approvedSectionIds;
+  if (!Array.isArray(sections) || sections.length === 0) return ['publicFields.bulletin.webEdition.sections is required'];
+  if (!Array.isArray(approvedIds)) return ['approval.approvedSectionIds is required for webEdition registration'];
+  const sectionIds = sections.map((section) => section?.id);
+  if (sectionIds.some((id) => !isText(id)) || new Set(sectionIds).size !== sectionIds.length) errors.push('webEdition section IDs must be present and unique');
+  if (approvedIds.length !== sectionIds.length || new Set(approvedIds).size !== approvedIds.length || sectionIds.some((id) => !approvedIds.includes(id))) {
+    errors.push('approval.approvedSectionIds must exactly match the webEdition section IDs');
+  }
+  for (const [index, section] of sections.entries()) {
+    if (!Number.isInteger(section.sourcePage) || !Number.isInteger(section.sourceOrder)) errors.push(`webEdition section ${index} is missing source position`);
+  }
+  return errors;
+};
+
+const publicBulletinOnly = (draft) => {
+  const source = draft.publicFields.bulletin;
+  const bulletin = {
+    id: source.id,
+    slug: source.slug,
+    date: source.date,
+    issueNumber: source.issueNumber,
+    title: source.title,
+    description: source.description,
+    publicFile: source.publicFile ?? null,
+    relatedSermonId: source.relatedSermonId,
+    privacyReview: 'approved-for-publication',
+    publicStatus: 'published',
+    approvalStatus: 'approved',
+    archiveStatus: 'current',
+    updatedAt: draft.approval.approvedAt.slice(0, 10),
+    webEdition: approvedWebEdition(draft)
+  };
+  return bulletin;
+};
+
 const internalLeakErrors = (draft, publicOnlyData) => {
   const errors = [];
   const serialized = JSON.stringify(publicOnlyData);
   if (/REFERENCE[\\/]/i.test(serialized)) errors.push('public registration contains REFERENCE path');
   if (/sourceReference|privateNotes|rawText|childrenNames|attendees|personalNames|evidence|uncertainFields|conflicts/i.test(serialized)) errors.push('public registration contains internal draft fields');
-  if (draft.publicFields.sermon.youtubeUrl && !youtubeIdFromUrl(draft.publicFields.sermon.youtubeUrl)) errors.push('invalid YouTube URL must not be registered');
+  if (draft.publicFields.sermon?.youtubeUrl && !youtubeIdFromUrl(draft.publicFields.sermon.youtubeUrl)) errors.push('invalid YouTube URL must not be registered');
   return errors;
 };
 
@@ -187,6 +254,27 @@ export const prepareApprovedSermonRegistration = ({ draft, sermons, bulletins })
   const validationErrors = validateContent({ sermons: [...sermons, data], bulletins });
   errors.push(...validationErrors);
   return { errors, data: errors.length ? null : { sermons: [...sermons, data], bulletins } };
+};
+
+export const prepareApprovedBulletinRegistration = ({ draft, sermons, bulletins }) => {
+  const errors = [
+    ...approvalErrors(draft),
+    ...requiredPublicFields(draft, 'bulletin'),
+    ...optionalApprovalErrors(draft, 'bulletin'),
+    ...webEditionApprovalErrors(draft)
+  ];
+  if (errors.length) return { errors, data: null };
+  const bulletin = publicBulletinOnly(draft);
+  const linkedSermon = sermons.find((sermon) => sermon.id === bulletin.relatedSermonId);
+  if (!linkedSermon) errors.push(`bulletin related sermon not found: ${bulletin.relatedSermonId}`);
+  else {
+    if (linkedSermon.date !== bulletin.date) errors.push('bulletin date must match its related sermon date');
+    if (linkedSermon.publicStatus !== 'published' || linkedSermon.approvalStatus !== 'approved') errors.push('bulletin must link to a published and approved sermon');
+  }
+  errors.push(...internalLeakErrors(draft, { bulletin }));
+  const validationErrors = validateContent({ sermons, bulletins: [...bulletins, bulletin] });
+  errors.push(...validationErrors);
+  return { errors, data: errors.length ? null : { sermons, bulletins: [...bulletins, bulletin] } };
 };
 
 const safeUnlink = async (file) => {
@@ -244,6 +332,26 @@ export const writeSermonFile = async ({ sermons, sermonsFile = sermonsPath }) =>
   }
 };
 
+export const writeBulletinFile = async ({ bulletins, bulletinsFile = bulletinsPath }) => {
+  const token = randomUUID();
+  const bulletinTemp = `${bulletinsFile}.${token}.tmp`;
+  const bulletinBackup = `${bulletinsFile}.${token}.bak`;
+  let bulletinBackedUp = false;
+  let bulletinInstalled = false;
+  await mkdir(path.dirname(bulletinsFile), { recursive: true });
+  try {
+    await writeFile(bulletinTemp, `${JSON.stringify(bulletins, null, 2)}\n`, 'utf8');
+    await rename(bulletinsFile, bulletinBackup); bulletinBackedUp = true;
+    await rename(bulletinTemp, bulletinsFile); bulletinInstalled = true;
+    await safeUnlink(bulletinBackup);
+  } catch (error) {
+    if (bulletinInstalled) await safeUnlink(bulletinsFile);
+    if (bulletinBackedUp) await rename(bulletinBackup, bulletinsFile);
+    await safeUnlink(bulletinTemp);
+    throw error;
+  }
+};
+
 export const registerApprovedDraft = async ({ draft, sermons, bulletins, writeFiles = writeContentFiles }) => {
   const prepared = prepareApprovedRegistration({ draft, sermons, bulletins });
   if (prepared.errors.length) throw new Error(`Approved draft registration failed:\n- ${prepared.errors.join('\n- ')}`);
@@ -255,6 +363,13 @@ export const registerApprovedSermon = async ({ draft, sermons, bulletins, writeF
   const prepared = prepareApprovedSermonRegistration({ draft, sermons, bulletins });
   if (prepared.errors.length) throw new Error(`Approved sermon registration failed:\n- ${prepared.errors.join('\n- ')}`);
   await writeFile({ sermons: prepared.data.sermons });
+  return prepared.data;
+};
+
+export const registerApprovedBulletin = async ({ draft, sermons, bulletins, writeFile = writeBulletinFile }) => {
+  const prepared = prepareApprovedBulletinRegistration({ draft, sermons, bulletins });
+  if (prepared.errors.length) throw new Error(`Approved bulletin registration failed:\n- ${prepared.errors.join('\n- ')}`);
+  await writeFile({ bulletins: prepared.data.bulletins });
   return prepared.data;
 };
 
@@ -272,7 +387,7 @@ const parseArgs = (argv) => {
 const run = async () => {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || !args.input) {
-    console.log('Usage: npm run register -- --input drafts/approved-content-draft.json [--scope both|sermon]');
+    console.log('Usage: npm run register -- --input drafts/approved-content-draft.json [--scope both|sermon|bulletin]');
     console.log('Approval is read from the draft and cannot be supplied as a command-line option.');
     if (!args.help) process.exitCode = 2;
     return;
@@ -284,10 +399,13 @@ const run = async () => {
   const sermons = JSON.parse(await readFile(sermonsPath, 'utf8'));
   const bulletins = JSON.parse(await readFile(bulletinsPath, 'utf8'));
   const scope = args.scope || 'both';
-  if (!['both', 'sermon'].includes(scope)) throw new Error(`Unsupported registration scope: ${scope}`);
+  if (!['both', 'sermon', 'bulletin'].includes(scope)) throw new Error(`Unsupported registration scope: ${scope}`);
   if (scope === 'sermon') {
     await registerApprovedSermon({ draft, sermons, bulletins });
     console.log('Approved sermon registered in content/sermons.json. Bulletin content was not changed.');
+  } else if (scope === 'bulletin') {
+    await registerApprovedBulletin({ draft, sermons, bulletins });
+    console.log('Approved bulletin registered in content/bulletins.json. Sermon content was not changed.');
   } else {
     await registerApprovedDraft({ draft, sermons, bulletins });
     console.log('Approved draft registered in content/sermons.json and content/bulletins.json.');
