@@ -162,10 +162,8 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /E2E TEST ONLY Sermon/);
   assert.match(publicFiles['bulletins/index.html'], /2026-10-12/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /E2E TEST ONLY Bulletin/);
-  assert.match(publicFiles['index.html'], /E2E TEST ONLY Sermon/);
-  assert.match(publicFiles['index.html'], /E2E TEST ONLY Bulletin/);
-  assert.match(publicFiles['index.html'], /이번 주 교회 소식/);
-  assert.match(publicFiles['index.html'], /E2E TEST ONLY featured news/);
+  assert.match(publicFiles['index.html'], /새사람이 사용하는 언어/);
+  assert.match(publicFiles['index.html'], /2026년 10월 18일 주보/);
   assert.doesNotMatch(publicFiles['index.html'], /E2E TEST ONLY monthly theme|E2E TEST ONLY prayer|E2E TEST ONLY news/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /property="og:title"/);
@@ -173,7 +171,7 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /유튜브에서 보기/);
-  assert.match(publicFiles['index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
+  assert.match(publicFiles['index.html'], /youtube-nocookie\.com\/embed\/GOJmfNM6Oro/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/bulletins\/2026-10-12\//);

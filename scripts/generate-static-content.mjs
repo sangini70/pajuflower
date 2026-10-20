@@ -131,7 +131,7 @@ const bulletinDetail = (bulletin) => {
       { name: '주보 아카이브', pathname: '/bulletins/' },
       { name: bulletin.title, pathname: `/bulletins/${bulletin.slug}/` }
     ])],
-    body: `<article class="content-detail bulletin-detail">${details}</article>`
+    body: `<article class="content-detail bulletin-detail">${details}${sermon ? `<div class="content-actions"><a class="content-link" href="/sermons/${escapeHtml(sermon.slug)}/">설교 보기</a></div>` : ''}</article>`
   });
 };
 
