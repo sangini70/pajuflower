@@ -63,6 +63,8 @@ npm run build
 - 주보 자동 편집·조판 모델, A4 배치, 인쇄·반응형 렌더링, 보존 검증을 설계하거나 구현할 때: `church-bulletin-layout-engine`
 - 주보 전용 레이아웃 Skill은 일반 웹 유지보수나 콘텐츠 발행을 대신하지 않으며, 실제 레이아웃 엔진 작업에만 사용한다.
 
+주보 제작·수정 요청이 들어오면 먼저 `.agents/skills/church-bulletin-layout-engine/SKILL.md`와 그 참고 문서를 확인한 뒤, `PAJU_FLOWER_WORKFLOW.md`의 승인·등록·검증 절차를 따른다. 상세 레이아웃 규칙은 이 문서에 중복 작성하지 않는다.
+
 ## Git과 배포
 
 - 기본적으로 commit, push, Vercel 배포를 수행하지 않는다.

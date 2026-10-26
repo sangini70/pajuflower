@@ -14,6 +14,8 @@ Use this skill only when a task concerns semantic re-editing, automatic layout p
 
 Read and follow `AGENTS.md`, the project constitution, `PAJU_FLOWER_WORKFLOW.md`, and `WEBSITE_BRIEF.md` before implementation. Existing user changes are preserved and the current Vite/Vercel architecture remains the baseline.
 
+Apply the project reference standard in `references/BULLETIN_LAYOUT_STANDARD.md` when creating or reviewing a bulletin. The standard is an operational supplement, not a replacement for the constitution or publishing rules.
+
 ## Source and approval boundary
 
 1. Treat `content/bulletins.json` as the source of truth. Do not rewrite it merely to support presentation.
@@ -23,6 +25,16 @@ Read and follow `AGENTS.md`, the project constitution, `PAJU_FLOWER_WORKFLOW.md`
 5. Preserve existing bulletin URLs, canonical URLs, Open Graph data, JSON-LD, sitemap behavior, and sermon relationships unless a separate approved change explicitly requires otherwise.
 
 ## Standard pipeline
+
+Every bulletin task must follow this gate sequence:
+
+```text
+source inspection -> private draft -> source-text reconciliation -> public approval
+-> registration -> static HTML generation -> automated validation -> visual review
+-> separate deployment approval
+```
+
+Do not skip a gate because a section count looks correct. A heading with an empty body, a missing approved source item, an over-spaced worship marker column, mobile horizontal overflow, or exposed private data is a failed result and must be reported as `FAIL`.
 
 ### A. Data Audit
 
