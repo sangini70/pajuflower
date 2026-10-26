@@ -100,11 +100,16 @@ const renderSchedule = (block) => table(['날짜', '기도', '특송'], block.it
 const renderTextList = (block) => compactList(block.items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`);
 const renderCover = (block) => `<header class="bulletin-identity"><h1>${escapeHtml(block.churchName)}</h1><p>${escapeHtml(block.issueNumber)}</p><p>${escapeHtml(block.establishedDate)}</p><p>${escapeHtml(block.date)}</p><p>${escapeHtml(block.proclamation)}</p><p>${escapeHtml(block.verse)} ${escapeHtml(block.verseReference)}</p></header>`;
 const renderEditionTable = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${table(block.columns, block.rows)}`;
-const renderEditionNumberedList = (block) => `<ol class="bulletin-list bulletin-numbered-list">${block.items.map((item) => `<li><strong class="bulletin-item-number">${escapeHtml(item.number)}</strong><div class="bulletin-item-content">${(item.lines || []).map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</div></li>`).join('')}</ol>`;
+const numberedItemParts = (item, index) => {
+  if (Array.isArray(item)) return { number: item[0] ?? String(index + 1), lines: item.slice(1) };
+  if (typeof item === 'string') return { number: String(index + 1), lines: [item] };
+  return { number: item?.number ?? String(index + 1), lines: item?.lines || [] };
+};
+const renderEditionNumberedList = (block) => `<ol class="bulletin-list bulletin-numbered-list">${block.items.map((item, index) => { const parts = numberedItemParts(item, index); return `<li><strong class="bulletin-item-number">${escapeHtml(parts.number)}</strong><div class="bulletin-item-content">${parts.lines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</div></li>`; }).join('')}</ol>`;
 const renderEditionTextList = (block) => compactList(block.items, (item) => `<span>${escapeHtml(item)}</span>`);
 const renderArticle = (block) => `${(block.paragraphs || []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}${(block.subsections || []).map((subsection) => `<section><h3>${escapeHtml(subsection.title)}</h3>${subsection.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}${block.conclusion ? `<p>${escapeHtml(block.conclusion)}</p>` : ''}`;
 const renderVerse = (block) => `<p>${escapeHtml(block.text)}</p><p>${escapeHtml(block.reference)}</p>`;
-const renderService = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${(block.facts || []).map((fact) => `<p>${escapeHtml(fact)}</p>`).join('')}${table(block.columns, block.rows, block.leadingMarker)}${block.footnote ? `<p>${escapeHtml(block.footnote)}</p>` : ''}`;
+const renderService = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${(block.facts || []).map((fact) => `<p>${escapeHtml(fact)}</p>`).join('')}${table(block.columns, block.rows, block.leadingMarker || block.rows?.some((row) => row?.[0] === '*'))}${block.footnote ? `<p>${escapeHtml(block.footnote)}</p>` : ''}`;
 
 const renderBlock = (block) => {
   const renderer = {

@@ -28,7 +28,7 @@ const approvedDraft = () => ({
     },
     bulletin: {
       id: 'bulletin-2026-10-12-41', slug: '2026-10-12', date: '2026-10-12',
-      issueNumber: '제14권 43호', title: '2026년 10월 12일 주보', description: '공개 승인된 주보 설명',
+      issueNumber: '제14권 44호', title: '2026년 10월 12일 주보', description: '공개 승인된 주보 설명',
       publicFile: null, relatedSermonId: 'sermon-2026-10-12'
     }
   }
@@ -71,7 +71,7 @@ const bulletinOnlyDraft = () => ({
   publicFields: {
     bulletin: {
     id: 'bulletin-2026-10-12', slug: '2026-10-12', date: '2026-10-12',
-      issueNumber: '제14권 43호', title: '2026년 10월 12일 주보', description: '교회 주보',
+      issueNumber: '제14권 44호', title: '2026년 10월 12일 주보', description: '교회 주보',
       publicFile: null, relatedSermonId: 'sermon-2026-10-12',
       webEdition: {
         sections: [{

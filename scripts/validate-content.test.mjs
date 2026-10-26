@@ -10,8 +10,8 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 const errorsFor = (sermons = baseSermons, bulletins = baseBulletins) => validateContent({ sermons, bulletins });
 
 assert.deepEqual(errorsFor(), [], 'normal content must pass');
-assert.equal(baseSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 3);
-assert.equal(baseBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 3);
+assert.equal(baseSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 4);
+assert.equal(baseBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 4);
 
 const restoredBulletin = baseBulletins.find((item) => item.slug === '2026-10-04');
 const restoredSermon = baseSermons.find((item) => item.id === restoredBulletin.relatedSermonId);
@@ -92,8 +92,8 @@ pendingSermons[0].approvalStatus = 'pending';
 pendingBulletins[0].publicStatus = 'pending';
 pendingBulletins[0].approvalStatus = 'pending';
 assert.deepEqual(errorsFor(pendingSermons, pendingBulletins), [], 'pending content may be stored but must validate');
-assert.equal(pendingSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 2);
-assert.equal(pendingBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 2);
+assert.equal(pendingSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 3);
+assert.equal(pendingBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length, 3);
 
 const privateLeak = clone(baseSermons);
 privateLeak[0].summary = '문의: 010-1234-5678';
