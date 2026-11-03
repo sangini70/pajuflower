@@ -1,4 +1,4 @@
-:root { --ink: #183d35; --ink-deep: #0f2b27; --cream: #f8f5ed; --paper: #fffdf8; --lime: #b9d34a; --coral: #e67a61; --muted: #64736e; --line: rgba(24, 61, 53, .16); }
+:root { --ink: #183d35; --ink-deep: #0f2b27; --cream: #f8f5ed; --paper: #fffdf8; --lime: #b9d34a; --coral: #e67a61; --muted: #64736e; --line: rgba(24, 61, 53, .16); --table-line: rgba(24, 61, 53, .22); --table-head: rgba(24, 61, 53, .08); --table-label: rgba(24, 61, 53, .06); }
 * { box-sizing: border-box; }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif; line-height: 1.7; }
 a { color: inherit; }
@@ -52,23 +52,25 @@ a { color: inherit; }
 .content-meta dd { margin: 4px 0 0; font-weight: 800; }
 .bulletin-section { margin-top: 12px; }
 .bulletin-section h2 { margin: 0 0 6px; font-size: 1rem; line-height: 1.25; }
-.bulletin-theme { display: grid; gap: 2px; padding: 10px 12px; border-radius: 10px; background: var(--cream); }
+.bulletin-theme { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); }
 .bulletin-theme strong { font-size: 1.08rem; }
 .bulletin-theme span, .bulletin-list span { color: var(--muted); }
 .bulletin-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .bulletin-list li { display: grid; gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--line); }
-.bulletin-table { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--cream); }
-.bulletin-table-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 7px 9px; border-top: 1px solid var(--line); }
+.bulletin-table { overflow: hidden; border: 1px solid var(--table-line); border-radius: 14px; background: var(--paper); }
+.bulletin-table-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); gap: 0; padding: 0; border-top: 1px solid var(--table-line); }
 .bulletin-table-columns-2 .bulletin-table-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .bulletin-table-columns-3 .bulletin-table-row { grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); }
 .bulletin-table-columns-4 .bulletin-table-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .bulletin-table-leading-marker .bulletin-table-row { grid-template-columns: 1rem minmax(0, 1.35fr) minmax(0, 1.15fr) minmax(0, .85fr); }
 .bulletin-table-row:first-child { border-top: 0; }
-.bulletin-table-head { color: var(--muted); font-size: .84rem; font-weight: 800; }
-.bulletin-table-row span { min-width: 0; overflow-wrap: anywhere; }
+.bulletin-table-head { color: var(--muted); font-size: .84rem; font-weight: 800; background: var(--table-head); }
+.bulletin-table-row span { min-width: 0; padding: 7px 9px; overflow-wrap: anywhere; border-left: 1px solid var(--table-line); }
+.bulletin-table-row span:first-child { border-left: 0; }
+.bulletin-table-columns-4:not(.bulletin-table-leading-marker) .bulletin-table-row:not(.bulletin-table-head) span:nth-child(odd) { background: var(--table-label); font-weight: 700; }
 .bulletin-sermon-meta { margin: 0; }
 .bulletin-detail .content-meta { gap: 8px; margin: 12px 0; }
-.bulletin-detail .content-meta div { padding: 10px 12px; }
+.bulletin-detail .content-meta div { padding: 10px 12px; border: 1px solid var(--line); }
 .bulletin-sermon-summary { margin: 12px 0 0; color: var(--muted); }
 .content-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 30px; }
 .content-button { display: inline-flex; padding: 12px 18px; border-radius: 999px; background: var(--lime); color: var(--ink-deep); font-weight: 800; text-decoration: none; }
@@ -80,7 +82,7 @@ a { color: inherit; }
 .content-footer .content-wrap { display: flex; align-items: center; gap: 18px; }
 .content-footer img { display: block; width: 180px; max-width: 48vw; filter: brightness(0) invert(1); opacity: .88; }
 @media print { @page { size: A4 portrait; margin: 10mm; } .content-header, .content-footer, .bulletin-related { display: none; } .content-wrap { width: auto; max-width: none; } .bulletin-detail { max-width: none; padding: 0; } .bulletin-paper { padding: 0; border: 0; } .bulletin-columns { gap: 7mm; } .bulletin-section, .bulletin-list { break-inside: avoid; } .bulletin-table { break-inside: auto; } .bulletin-table-row { break-inside: avoid; } }
-@media (max-width: 680px) { .content-wrap { width: min(100% - 32px, 640px); } .content-header .content-wrap { align-items: flex-start; flex-direction: column; justify-content: center; padding: 16px 0; } .content-brand img { width: 190px; } .content-header nav { gap: 14px; font-size: .92rem; } .content-grid, .content-meta { grid-template-columns: 1fr; } .bulletin-columns, .bulletin-paper-webEdition .bulletin-columns { display: flex; flex-direction: column; gap: 0; columns: auto; min-width: 0; } .bulletin-paper-webEdition .bulletin-block-cover-identity { column-span: none; min-width: 0; max-width: 100%; } .bulletin-paper-webEdition .bulletin-section { display: block; min-width: 0; max-width: 100%; } .bulletin-block-metadata-identity, .bulletin-block-worship-order, .bulletin-block-sermon-summary, .bulletin-block-monthly-theme, .bulletin-block-church-news, .bulletin-block-worship-schedule, .bulletin-block-prayer-topics, .bulletin-block-faith-guide { width: 100%; } .bulletin-paper-webEdition p, .bulletin-paper-webEdition .bulletin-list span, .bulletin-paper-webEdition .bulletin-item-content { overflow-wrap: anywhere; } .content-hero, .content-detail { padding: 64px 0 36px; } .bulletin-detail { padding: 36px 0 48px; } .content-footer .content-wrap { align-items: flex-start; flex-direction: column; gap: 12px; } .content-footer img { width: 160px; } .bulletin-table-row, .bulletin-table-columns-3 .bulletin-table-row { grid-template-columns: 4.4rem minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px; font-size: .92rem; } .bulletin-table-columns-2 .bulletin-table-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bulletin-table-columns-4:not(.bulletin-table-leading-marker) .bulletin-table-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 10px; font-size: .92rem; } .bulletin-table-leading-marker .bulletin-table-row { grid-template-columns: 1rem minmax(0, 1fr) minmax(0, auto); gap: 4px 8px; font-size: .92rem; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(1) { grid-column: 1; grid-row: 1 / span 2; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(2) { grid-column: 2; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(3) { grid-column: 2 / 4; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(4) { grid-column: 3; grid-row: 1; text-align: right; } .bulletin-numbered-list li { grid-template-columns: 1.3rem minmax(0, 1fr); column-gap: 5px; } }
+@media (max-width: 680px) { .content-wrap { width: min(100% - 32px, 640px); } .content-header .content-wrap { align-items: flex-start; flex-direction: column; justify-content: center; padding: 16px 0; } .content-brand img { width: 190px; } .content-header nav { gap: 14px; font-size: .92rem; } .content-grid, .content-meta { grid-template-columns: 1fr; } .bulletin-columns, .bulletin-paper-webEdition .bulletin-columns { display: flex; flex-direction: column; gap: 0; columns: auto; min-width: 0; } .bulletin-paper-webEdition .bulletin-block-cover-identity { column-span: none; min-width: 0; max-width: 100%; } .bulletin-paper-webEdition .bulletin-section { display: block; min-width: 0; max-width: 100%; } .bulletin-block-metadata-identity, .bulletin-block-worship-order, .bulletin-block-sermon-summary, .bulletin-block-monthly-theme, .bulletin-block-church-news, .bulletin-block-worship-schedule, .bulletin-block-prayer-topics, .bulletin-block-faith-guide { width: 100%; } .bulletin-paper-webEdition p, .bulletin-paper-webEdition .bulletin-list span, .bulletin-paper-webEdition .bulletin-item-content { overflow-wrap: anywhere; } .content-hero, .content-detail { padding: 64px 0 36px; } .bulletin-detail { padding: 36px 0 48px; } .content-footer .content-wrap { align-items: flex-start; flex-direction: column; gap: 12px; } .content-footer img { width: 160px; } .bulletin-table-row, .bulletin-table-columns-3 .bulletin-table-row { grid-template-columns: 4.4rem minmax(0, 1fr) minmax(0, 1fr); font-size: .92rem; } .bulletin-table-row span { padding: 8px 7px; } .bulletin-table-columns-2 .bulletin-table-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bulletin-table-columns-4:not(.bulletin-table-leading-marker) .bulletin-table-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; font-size: .92rem; } .bulletin-table-leading-marker .bulletin-table-row { grid-template-columns: 1rem minmax(0, 1fr) minmax(0, auto); gap: 0; font-size: .92rem; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(1) { grid-column: 1; grid-row: 1 / span 2; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(2) { grid-column: 2; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(3) { grid-column: 2 / 4; } .bulletin-table-leading-marker .bulletin-table-row span:nth-child(4) { grid-column: 3; grid-row: 1; text-align: right; } .bulletin-numbered-list li { grid-template-columns: 1.3rem minmax(0, 1fr); column-gap: 5px; } }
 @media (max-width: 680px) {
   .bulletin-detail { padding: 28px 0 32px; }
   .bulletin-paper-webEdition { padding: 4px 0 12px; font-size: 13px; line-height: 1.55; }
@@ -105,3 +107,16 @@ a { color: inherit; }
 @media (max-width: 680px) {
   .bulletin-paper-webEdition .bulletin-table-leading-marker .bulletin-table-row { grid-template-columns: 1rem minmax(0, 1fr) minmax(0, auto); gap: 4px 6px; }
 }
+
+.bulletin-table-leading-marker .bulletin-table-row span:nth-child(1),
+.bulletin-table-leading-marker .bulletin-table-row span:nth-child(2) { border-left: 0; }
+.bulletin-table-leading-marker .bulletin-table-row span:nth-child(2) { text-align: left; }
+.bulletin-table-leading-marker .bulletin-table-row span:nth-child(3),
+.bulletin-table-leading-marker .bulletin-table-row span:nth-child(4) { text-align: center; }
+.bulletin-table-columns-4:not(.bulletin-table-leading-marker) .bulletin-table-row span { text-align: center; }
+.bulletin-block-church-event-schedule .bulletin-table-columns-3 .bulletin-table-row span,
+.bulletin-block-sunday-school-schedule .bulletin-table-columns-3 .bulletin-table-row span,
+.bulletin-block-sunday-group-meetings .bulletin-table-columns-2 .bulletin-table-row span,
+.bulletin-block-next-week-volunteers .bulletin-table-columns-2 .bulletin-table-row span,
+.bulletin-block-sunday-school-study .bulletin-table-columns-2 .bulletin-table-row span,
+.bulletin-block-wednesday-prayer .bulletin-table-columns-2 .bulletin-table-row span { text-align: center; }
