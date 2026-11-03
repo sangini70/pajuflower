@@ -65,6 +65,8 @@ npm run build
 
 주보 제작·수정 요청이 들어오면 먼저 `.agents/skills/church-bulletin-layout-engine/SKILL.md`와 그 참고 문서를 확인한 뒤, `PAJU_FLOWER_WORKFLOW.md`의 승인·등록·검증 절차를 따른다. 상세 레이아웃 규칙은 이 문서에 중복 작성하지 않는다.
 
+설교·주보 작성 또는 등록 요청에서는 `SEO_CONTENT_AUTOMATION.md`도 참조한다. SEO 메타데이터·키워드·내부 링크 제안은 원문과 승인 절차를 우선하며, 해당 문서가 기존 발행 구조·레이아웃·개인정보 보호 규칙을 대체하지 않도록 한다.
+
 ## Git과 배포
 
 - 기본적으로 commit, push, Vercel 배포를 수행하지 않는다.

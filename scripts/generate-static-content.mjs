@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertValidContent } from './validate-content.mjs';
 import { createBulletinDocument, renderBulletinDocument } from './bulletin-layout.mjs';
+import { resolveSeo } from './seo-content.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -60,6 +61,7 @@ const shell = ({ title, description, pathname, body, ogType = 'website', jsonLd 
 
 const sermonById = new Map(publicSermons.map((sermon) => [sermon.id, sermon]));
 const bulletinBySermonId = new Map(publicBulletins.map((bulletin) => [bulletin.relatedSermonId, bulletin]));
+const seoValue = (item, fallback) => resolveSeo(item, fallback);
 
 const breadcrumbJsonLd = (items) => ({
   '@context': 'https://schema.org',
@@ -89,12 +91,16 @@ const listPage = (kind, items, title, description, cardRenderer, pathname) => sh
 
 const sermonDetail = (sermon) => {
   const bulletin = bulletinBySermonId.get(sermon.id);
+  const seo = seoValue(sermon, {
+    title: `${sermon.title} | 파주꽃동산교회 설교`,
+    description: `${sermon.date} 파주꽃동산교회 설교: ${sermon.title} · ${sermon.scripture}`
+  });
   const videoId = youtubeIdFromUrl(sermon.youtubeUrl);
   const video = videoId ? `${youtubeEmbed(sermon)}<a class="content-button" href="${escapeHtml(sermon.youtubeUrl)}" target="_blank" rel="noopener noreferrer">유튜브에서 보기</a>` : '';
   const bulletinLink = bulletin ? `<a class="content-link" href="/bulletins/${escapeHtml(bulletin.slug)}/">관련 주보 보기 →</a>` : '';
   return shell({
-    title: `${sermon.title} | 파주꽃동산교회 설교`,
-    description: `${sermon.date} 파주꽃동산교회 설교: ${sermon.title} · ${sermon.scripture}`,
+    title: seo.title,
+    description: seo.description,
     pathname: `/sermons/${sermon.slug}/`,
     ogType: 'article',
     jsonLd: [
@@ -119,11 +125,15 @@ const sermonDetail = (sermon) => {
 
 const bulletinDetail = (bulletin) => {
   const sermon = sermonById.get(bulletin.relatedSermonId);
+  const seo = seoValue(bulletin, {
+    title: `${bulletin.title} | 파주꽃동산교회 주보`,
+    description: `${bulletin.date} ${bulletin.issueNumber} 파주꽃동산교회 주보`
+  });
   const document = createBulletinDocument(bulletin, sermon);
   const { html: details } = renderBulletinDocument(document);
   return shell({
-    title: `${bulletin.title} | 파주꽃동산교회 주보`,
-    description: `${bulletin.date} ${bulletin.issueNumber} 파주꽃동산교회 주보`,
+    title: seo.title,
+    description: seo.description,
     pathname: `/bulletins/${bulletin.slug}/`,
     ogType: 'article',
     jsonLd: [breadcrumbJsonLd([
