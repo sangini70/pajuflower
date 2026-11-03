@@ -160,6 +160,8 @@ const publicOnly = (draft) => {
       approvalStatus: 'approved'
     };
   }
+  const webEdition = approvedWebEdition(draft);
+  if (webEdition) bulletin.webEdition = webEdition;
   return { sermon, bulletin };
 };
 
@@ -167,7 +169,7 @@ const PUBLIC_WEB_SECTION_FIELDS = new Set([
   'id', 'sourcePage', 'sourceOrder', 'type', 'title', 'subtitle', 'churchName',
   'issueNumber', 'establishedDate', 'date', 'columns', 'rows', 'items',
   'paragraphs', 'subsections', 'facts', 'leadingMarker', 'footnote', 'text',
-  'reference', 'conclusion'
+  'reference', 'conclusion', 'proclamation', 'verse', 'verseReference'
 ]);
 
 const approvedWebEdition = (draft) => {
@@ -206,7 +208,7 @@ const webEditionApprovalErrors = (draft) => {
   return errors;
 };
 
-const publicBulletinOnly = (draft) => {
+export const publicBulletinOnly = (draft) => {
   const source = draft.publicFields.bulletin;
   const bulletin = {
     id: source.id,
