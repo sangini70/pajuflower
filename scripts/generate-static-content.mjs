@@ -47,7 +47,7 @@ const youtubeEmbed = (sermon, compact = false) => {
   const videoId = youtubeIdFromUrl(sermon.youtubeUrl);
   if (!videoId) return '';
   const title = `${sermon.title} YouTube video`;
-  return `<div class="sermon-video${compact ? ' sermon-video-compact' : ''}"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="${escapeHtml(title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+  return `<div class="sermon-video${compact ? ' sermon-video-compact' : ''}"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="${escapeHtml(title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
 };
 
 const shell = ({ title, description, pathname, body, ogType = 'website', jsonLd = [] }) => shellTemplate
