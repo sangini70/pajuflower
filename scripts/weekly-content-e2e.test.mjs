@@ -163,7 +163,7 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /E2E TEST ONLY Sermon/);
   assert.match(publicFiles['bulletins/index.html'], /2026-10-12/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /E2E TEST ONLY Bulletin/);
-  assert.match(publicFiles['index.html'], /인생을 결정하는 힘/);
+  assert.match(publicFiles['index.html'], /인생을 결정하는 혀/);
   assert.match(publicFiles['index.html'], /2026년 11월 8일 주보/);
   assert.doesNotMatch(publicFiles['index.html'], /E2E TEST ONLY monthly theme|E2E TEST ONLY prayer|E2E TEST ONLY news/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
