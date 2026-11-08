@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertValidContent } from './validate-content.mjs';
 import { createBulletinDocument, renderBulletinDocument } from './bulletin-layout.mjs';
-import { resolveSeo } from './seo-content.mjs';
+import { createBulletinSeo, createSermonSeo, resolveSeo } from './seo-content.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -74,6 +74,17 @@ const breadcrumbJsonLd = (items) => ({
   }))
 });
 
+const renderSermonBody = (summary = '') => summary
+  .split(/\n{2,}/)
+  .filter((block) => block.trim())
+  .map((block) => {
+    const lines = block.split('\n');
+    const heading = /^(첫째|둘째|셋째),\s*(.+)$/.exec(lines[0].trim());
+    if (!heading) return `<p>${escapeHtml(block)}</p>`;
+    return `<section class="sermon-manuscript-section"><h2>${escapeHtml(heading[0])}</h2><p>${escapeHtml(lines.slice(1).join('\n'))}</p></section>`;
+  })
+  .join('');
+
 const sermonCard = (sermon) => `<article class="content-card"><p class="content-eyebrow">설교 · ${escapeHtml(sermon.date)}</p><h2><a href="/sermons/${escapeHtml(sermon.slug)}/">${escapeHtml(sermon.title)}</a></h2><p>${escapeHtml(sermon.scripture)} · ${escapeHtml(sermon.preacher)}</p><a class="content-link" href="/sermons/${escapeHtml(sermon.slug)}/">상세 보기 →</a></article>`;
 const bulletinCard = (bulletin) => `<article class="content-card"><p class="content-eyebrow">주보 · ${escapeHtml(bulletin.date)}</p><h2><a href="/bulletins/${escapeHtml(bulletin.slug)}/">${escapeHtml(bulletin.title)}</a></h2><p>${escapeHtml(bulletin.issueNumber)}</p><a class="content-link" href="/bulletins/${escapeHtml(bulletin.slug)}/">상세 보기 →</a></article>`;
 
@@ -91,44 +102,52 @@ const listPage = (kind, items, title, description, cardRenderer, pathname) => sh
 
 const sermonDetail = (sermon) => {
   const bulletin = bulletinBySermonId.get(sermon.id);
-  const seo = seoValue(sermon, {
-    title: `${sermon.title} | 파주꽃동산교회 설교`,
-    description: `${sermon.date} 파주꽃동산교회 설교: ${sermon.title} · ${sermon.scripture}`
-  });
+  const seo = seoValue(sermon, createSermonSeo(sermon, bulletin));
   const videoId = youtubeIdFromUrl(sermon.youtubeUrl);
   const video = videoId ? `${youtubeEmbed(sermon)}<a class="content-button" href="${escapeHtml(sermon.youtubeUrl)}" target="_blank" rel="noopener noreferrer">유튜브에서 보기</a>` : '';
   const bulletinLink = bulletin ? `<a class="content-link" href="/bulletins/${escapeHtml(bulletin.slug)}/">관련 주보 보기 →</a>` : '';
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: sermon.title,
+    description: seo.description,
+    articleBody: sermon.summary,
+    datePublished: isoDate(sermon.date),
+    author: { '@type': 'Person', name: sermon.preacher },
+    publisher: { '@type': 'Church', name: '파주꽃동산교회', url: canonical('/') },
+    about: { '@type': 'Thing', name: sermon.scripture },
+    mainEntityOfPage: canonical(`/sermons/${sermon.slug}/`)
+  };
+  const videoJsonLd = videoId ? {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: sermon.title,
+    uploadDate: isoDate(sermon.date),
+    embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+    url: sermon.youtubeUrl,
+    isPartOf: { '@type': 'Article', '@id': canonical(`/sermons/${sermon.slug}/`) }
+  } : null;
   return shell({
     title: seo.title,
     description: seo.description,
     pathname: `/sermons/${sermon.slug}/`,
     ogType: 'article',
     jsonLd: [
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: sermon.title,
-        datePublished: isoDate(sermon.date),
-        author: { '@type': 'Person', name: sermon.preacher },
-        about: { '@type': 'Thing', name: sermon.scripture },
-        mainEntityOfPage: canonical(`/sermons/${sermon.slug}/`)
-      },
+      articleJsonLd,
+      ...(videoJsonLd ? [videoJsonLd] : []),
       breadcrumbJsonLd([
         { name: '홈', pathname: '/' },
         { name: '설교 아카이브', pathname: '/sermons/' },
         { name: sermon.title, pathname: `/sermons/${sermon.slug}/` }
       ])
     ],
-    body: `<article class="content-detail"><p class="content-eyebrow">설교 · ${escapeHtml(sermon.date)}</p><h1>${escapeHtml(sermon.title)}</h1><dl class="content-meta"><div><dt>성경 본문</dt><dd>${escapeHtml(sermon.scripture)}</dd></div><div><dt>설교자</dt><dd>${escapeHtml(sermon.preacher)}</dd></div></dl><p>${escapeHtml(sermon.summary)}</p><div class="content-actions">${video}${bulletinLink}</div></article>`
+    body: `<article class="content-detail"><p class="content-eyebrow">설교 · ${escapeHtml(sermon.date)}</p><h1>${escapeHtml(sermon.title)}</h1><dl class="content-meta"><div><dt>성경 본문</dt><dd>${escapeHtml(sermon.scripture)}</dd></div><div><dt>설교자</dt><dd>${escapeHtml(sermon.preacher)}</dd></div></dl><div class="sermon-manuscript">${renderSermonBody(sermon.summary)}</div><div class="content-actions">${video}${bulletinLink}</div></article>`
   });
 };
 
 const bulletinDetail = (bulletin) => {
   const sermon = sermonById.get(bulletin.relatedSermonId);
-  const seo = seoValue(bulletin, {
-    title: `${bulletin.title} | 파주꽃동산교회 주보`,
-    description: `${bulletin.date} ${bulletin.issueNumber} 파주꽃동산교회 주보`
-  });
+  const seo = seoValue(bulletin, createBulletinSeo(bulletin, sermon));
   const document = createBulletinDocument(bulletin, sermon);
   const { html: details } = renderBulletinDocument(document);
   return shell({
@@ -136,7 +155,15 @@ const bulletinDetail = (bulletin) => {
     description: seo.description,
     pathname: `/bulletins/${bulletin.slug}/`,
     ogType: 'article',
-    jsonLd: [breadcrumbJsonLd([
+    jsonLd: [{
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      name: bulletin.title,
+      datePublished: isoDate(bulletin.date),
+      isPartOf: { '@type': 'Church', name: '파주꽃동산교회', url: canonical('/') },
+      about: sermon ? { '@type': 'Thing', name: sermon.title } : undefined,
+      mainEntityOfPage: canonical(`/bulletins/${bulletin.slug}/`)
+    }, breadcrumbJsonLd([
       { name: '홈', pathname: '/' },
       { name: '주보 아카이브', pathname: '/bulletins/' },
       { name: bulletin.title, pathname: `/bulletins/${bulletin.slug}/` }

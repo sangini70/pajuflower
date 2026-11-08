@@ -30,7 +30,7 @@ const firstChurchNewsLine = (bulletin) => {
   return null;
 };
 
-const sermonSeo = (sermon, bulletin) => ({
+export const createSermonSeo = (sermon, bulletin) => ({
   primaryKeyword: sermon.title,
   secondaryKeywords: uniqueKeywords([sermon.scripture, `${sermon.title} 설교`, '파주꽃동산교회 설교'], sermon.title).slice(0, 5),
   queryKeywords: questionCandidates(sermon.summary),
@@ -45,7 +45,7 @@ const sermonSeo = (sermon, bulletin) => ({
   approvalStatus: 'pending'
 });
 
-const bulletinSeo = (bulletin, sermon) => {
+export const createBulletinSeo = (bulletin, sermon) => {
   const date = koreanDate(bulletin.date);
   const newsLine = firstChurchNewsLine(bulletin);
   const descriptionParts = [
@@ -79,8 +79,8 @@ export const createSeoDraft = ({ sermons, bulletins }) => {
     generatedAt: new Date().toISOString(),
     source: { contentFiles: ['content/sermons.json', 'content/bulletins.json'] },
     items: {
-      sermons: publicSermons.map((item) => ({ id: item.id, date: item.date, seo: sermonSeo(item, bulletinsBySermonId.get(item.id)) })),
-      bulletins: publicBulletins.map((item) => ({ id: item.id, date: item.date, seo: bulletinSeo(item, sermonsById.get(item.relatedSermonId)) }))
+      sermons: publicSermons.map((item) => ({ id: item.id, date: item.date, seo: createSermonSeo(item, bulletinsBySermonId.get(item.id)) })),
+      bulletins: publicBulletins.map((item) => ({ id: item.id, date: item.date, seo: createBulletinSeo(item, sermonsById.get(item.relatedSermonId)) }))
     },
     approval: { approved: false, approvedBy: null, approvedAt: null }
   };

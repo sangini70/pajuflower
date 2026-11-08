@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createSeoDraft, prepareApprovedSeoRegistration, resolveSeo } from './seo-content.mjs';
+import { createBulletinSeo, createSeoDraft, createSermonSeo, prepareApprovedSeoRegistration, resolveSeo } from './seo-content.mjs';
 
 const sermons = [{ id: 'sermon-1', slug: 'sermon-1', date: '2026-11-01', title: '위기 속의 감사', scripture: '다니엘 6:10', preacher: '최철민 목사', publicStatus: 'published', approvalStatus: 'approved' }];
 const bulletins = [{ id: 'bulletin-1', slug: '2026-11-01', date: '2026-11-01', issueNumber: '제14권 44호', title: '2026년 11월 1일 주보', description: '2026년 11월 1일 파주꽃동산교회 주보', relatedSermonId: 'sermon-1', publicStatus: 'published', approvalStatus: 'approved' }];
@@ -14,6 +14,8 @@ assert.match(draft.items.bulletins[0].seo.title, /주보 \| 파주꽃동산교�
 assert.equal(draft.items.bulletins[0].seo.title.includes('주보 | 파주꽃동산교회 주보'), false);
 assert.equal(draft.items.sermons[0].seo.internalLinks.some((link) => link.path.includes('://')), false);
 assert.equal(resolveSeo({ seo: draft.items.sermons[0].seo }, { title: '기존 제목', description: '기존 설명' }).title, '기존 제목');
+assert.match(createSermonSeo(sermons[0], bulletins[0]).description, /2026년 11월 1일/);
+assert.match(createBulletinSeo(bulletins[0], sermons[0]).description, /설교: 위기 속의 감사/);
 
 const unapproved = prepareApprovedSeoRegistration({ draft, sermons, bulletins });
 assert.ok(unapproved.errors.some((error) => error.includes('APPROVED')));

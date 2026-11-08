@@ -3697,5 +3697,663 @@
         }
       ]
     }
+  },
+  {
+    "id": "bulletin-2026-11-08",
+    "slug": "2026-11-08",
+    "date": "2026-11-08",
+    "issueNumber": "제14권 45호",
+    "title": "2026년 11월 8일 주보",
+    "description": "2026년 11월 8일 제14권 45호 파주꽃동산교회 주보",
+    "publicFile": null,
+    "relatedSermonId": "sermon-2026-11-08",
+    "privacyReview": "approved-for-publication",
+    "publicStatus": "published",
+    "approvalStatus": "approved",
+    "archiveStatus": "current",
+    "updatedAt": "2026-11-09",
+    "webEdition": {
+      "publicStatus": "published",
+      "approvalStatus": "approved",
+      "sections": [
+        {
+          "id": "cover-identity",
+          "sourcePage": 1,
+          "sourceOrder": 1,
+          "type": "cover",
+          "churchName": "파주꽃동산교회",
+          "issueNumber": "제14권 45호",
+          "establishedDate": "교회설립일 2013.1.12",
+          "date": "2026.11.08",
+          "verse": "내 영혼아 여호와를 송축하라",
+          "verseReference": "",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-service-roles",
+          "sourcePage": 1,
+          "sourceOrder": 2,
+          "type": "table",
+          "columns": [],
+          "rows": [
+            [
+              "은퇴 장로",
+              "정덕환",
+              "반주자",
+              "김희겸"
+            ],
+            [
+              "주일학교 전도사",
+              "최민솔",
+              "방송영상",
+              "최예슬"
+            ],
+            [
+              "파주노아선교단",
+              "최민솔",
+              "강단미화",
+              "이병자"
+            ],
+            [
+              "꽃동산축구선교단",
+              "최다솔",
+              "안내",
+              "여성목장"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-location",
+          "sourcePage": 1,
+          "sourceOrder": 3,
+          "type": "text-list",
+          "items": [
+            "담임목사 최철민",
+            "경기도 파주시 미래로 602번길 27, 태운플라자 7층(10895)",
+            "-가람마을 2단지 정문 롯데슈퍼 앞 운정수산 7층-",
+            "어린이를 사랑하는 대한예수교 장로회 파주꽃동산교회"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-news",
+          "sourcePage": 2,
+          "sourceOrder": 1,
+          "type": "numbered-list",
+          "title": "교회 소식",
+          "items": [
+            {
+              "number": "1",
+              "lines": [
+                "예배를 위해 20분 전에 오셔서 기도와 찬양으로 준비합시다.",
+                "교회 새로 나오신 성도님들을 환영합니다. 등록카드를 작성해서 제출해 주세요."
+              ]
+            },
+            {
+              "number": "2",
+              "lines": [
+                "2026년 교회 표어: ‘빛과 소금의 사명을 이루는 교회(마 5:13-14)’입니다.",
+                "주제성구: 너희는 세상의 소금이니 소금이 만일 그 맛을 잃으면 무엇으로 짜게 하리요 후에는 아무 쓸 데 없어 다만 밖에 버려져 사람에게 밟힐 뿐이니라 너희는 세상의 빛이라 산 위에 있는 동네가 숨겨지지 못할 것이요"
+              ]
+            }
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-event-schedule",
+          "sourcePage": 2,
+          "sourceOrder": 2,
+          "type": "table",
+          "title": "3. 교회 행사와 예배 기도자, 특송",
+          "columns": [
+            "날짜",
+            "기도",
+            "특송"
+          ],
+          "rows": [
+            [
+              "11.09(주) 주일예배",
+              "장명희 집사",
+              "다함께"
+            ],
+            [
+              "11.15(주) 추수감사절",
+              "박대성 권사",
+              "다함께"
+            ],
+            [
+              "11.22(주) 주일예배",
+              "박상연 집사",
+              "다함께"
+            ],
+            [
+              "11.29(주) 주일예배",
+              "박순자 권사",
+              "정덕환 장로"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "church-news-after-schedule",
+          "sourcePage": 2,
+          "sourceOrder": 3,
+          "type": "numbered-list",
+          "items": [
+            {
+              "number": "4",
+              "lines": [
+                "헌물: 빵"
+              ]
+            },
+            {
+              "number": "5",
+              "lines": [
+                "2026년 11월은 <감사의 고백으로 살아가는 달>"
+              ]
+            },
+            {
+              "number": "6",
+              "lines": [
+                "가을대심방이 시작됩니다. 기도로 준비해 주세요."
+              ]
+            },
+            {
+              "number": "7",
+              "lines": [
+                "추수감사절 (11.15) 준비",
+                "-과일 바구니 만들기 (주일에 가지고 오세요.)",
+                "-추수감사절 헌금 드리기",
+                "-성찬식이 있습니다. 기도로 준비해 주세요",
+                "-추수감사절 이웃 초청하기."
+              ]
+            },
+            {
+              "number": "8",
+              "lines": [
+                "심방 감사: 박대성 권사, 장명희 집사"
+              ]
+            }
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "prayer-topics",
+          "sourcePage": 2,
+          "sourceOrder": 4,
+          "type": "numbered-list",
+          "title": "<파주꽃동산교회의 기도제목>",
+          "items": [
+            {
+              "number": "1",
+              "lines": [
+                "하나님을 사랑하고, 이웃을 사랑하는 성도가 되게 하소서."
+              ]
+            },
+            {
+              "number": "2",
+              "lines": [
+                "평화통일과 군복무 중에 있는 형제들을 위해서, 나라의 지도자를 위해서"
+              ]
+            },
+            {
+              "number": "3",
+              "lines": [
+                "선교사님들을 위해서(권영민, 이정욱 선교사 가정)"
+              ]
+            },
+            {
+              "number": "4",
+              "lines": [
+                "소그룹을 위한 기도(남성목장, 여성목장, 청년부, 중고등부, 어린이부)"
+              ]
+            },
+            {
+              "number": "5",
+              "lines": [
+                "가족을 향한 기도(구원사역, 건강, 자녀, 손주, 경제, 진로)"
+              ]
+            },
+            {
+              "number": "6",
+              "lines": [
+                "꽃동산지역아동센터 사역을 위해서(34명 아동, 10명 교사)"
+              ]
+            },
+            {
+              "number": "7",
+              "lines": [
+                "파주노아선교단, 꽃동산축구선교단을 위해서"
+              ]
+            },
+            {
+              "number": "8",
+              "lines": [
+                "성령충만과 사명감당을 위해서"
+              ]
+            },
+            {
+              "number": "9",
+              "lines": [
+                "복음을 전하는 전도자가 되게 하소서."
+              ]
+            },
+            {
+              "number": "10",
+              "lines": [
+                "담임목사의 가정과 사역을 위해서"
+              ]
+            },
+            {
+              "number": "11",
+              "lines": [
+                "성도들의 건강과 회복을 위해서"
+              ]
+            },
+            {
+              "number": "12",
+              "lines": [
+                "파주꽃동산교회의 부흥을 위해서"
+              ]
+            }
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sermon-manuscript",
+          "sourcePage": 3,
+          "sourceOrder": 1,
+          "type": "article",
+          "title": "<인생을 결정하는 힘>",
+          "paragraphs": [
+            "사람은 하루에도 수많은 말을 하며 살아갑니다. 그런데 우리가 무심코 내뱉는 말 한마디가 다른 사람에게는 평생의 상처가 되기도 하고, 절망 가운데 있는 사람에게는 다시 일어설 용기가 되기도 합니다. 하나님께서는 우리의 혀에 놀라운 힘을 주셨습니다. 혀는 말을 하는 도구입니다. 그래서 말을 하는 사람은 천하를 얻기도 하고, 말을 잘 못하는 사람은 생명을 잃기도 하는 것입니다. 그렇다면 인생을 결정하는 힘인 말은 어떤 말을 할까요?"
+          ],
+          "subsections": [
+            {
+              "title": "첫째, 혀는 생각과 삶을 결정하는 권세를 가지고 있습니다.",
+              "paragraphs": [
+                "죽고 사는 것이 혀의 힘에 달렸나니 혀를 쓰기 좋아하는 자는 혀의 열매를 먹으리라(잠 18:21) 사도행전 5장에는 부부의 이야기가 나옵니다. 아나니아와 삽비라라는 부부입니다. 자신의 소유를 팔아 하나님께 드렸으나 거짓말로 현금을 드리다가 베드로의 책망으로 죽임을 맞이하게 되었습니다. 엘리사의 제자 게하시는 거짓말로 나아만 장군에게 은과 옷을 구하다가 문둥병이 생겨 사회적으로 사망 선고를 받게 되었습니다."
+              ]
+            },
+            {
+              "title": "둘째, 혀를 쓰기 좋아하는 자는 책임감을 가지고 있습니다.",
+              "paragraphs": [
+                "오늘 본문 말씀에 혀를 쓰기 좋아하는 자가 나옵니다. 이 말은 말의 책임을 진다는 의미가 있습니다. 우리가 한 말은 책임을 져야 합니다. 그래서 말 조심을 해야 합니다. 함부로 내뱉은 말로 인해 망한 사람이 한두 명이 아닙니다. 갈렙은 젊은 때에 정탐꾼으로 가나안 땅을 다녀왔습니다. 85세가 되었을 때 아직 정복하지 못한 땅을 보고 “이 산지를 내게 주소서”라며 자신의 젊은 때에 말한 고백을 지킨 삶을 살았습니다."
+              ]
+            },
+            {
+              "title": "셋째, 혀는 열매를 맺습니다.",
+              "paragraphs": [
+                "12명의 정탐꾼이 가데스바네아에서 정탐 보고를 합니다. 10명의 사람들은 그 성을 이기지 못한다고 보고했습니다. 그러나 여호수아와 갈렙은 능히 이길 것이라고 했습니다. 백성들은 10명의 보고에 울며 하나님을 원망했습니다. 10명의 정탐꾼은 자신을 메뚜기와 같다고 말했습니다. 그러나 여호수아와 갈렙은 저들은 ‘우리의 먹이라’ 말했습니다. 그들의 말대로 10명은 가나안 땅에 들어가지 못했고, 여호수아와 갈렙은 그 땅을 차지했습니다. 믿음으로 감사하는 자에게는 감사의 열매가 맺힐 것입니다."
+              ]
+            }
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "memory-verse",
+          "sourcePage": 3,
+          "sourceOrder": 2,
+          "type": "verse",
+          "title": "이번주 말씀 암송",
+          "text": "죽고 사는 것이 혀의 힘에 달렸나니 혀를 쓰기 좋아하는 자는 혀의 열매를 먹으리라",
+          "reference": "(잠언 18:21)",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "missionaries-public",
+          "sourcePage": 3,
+          "sourceOrder": 3,
+          "type": "text-list",
+          "title": "우리가 섬기는 선교사",
+          "items": [
+            "네팔: 이정욱 정혜림 선교사",
+            "1. 네팔의 영적인 부흥을 위해",
+            "2. 네팔 한인교회를 위해",
+            "베트남: 권영민 이민경 선교사",
+            "1. 베트남의 영적인 부흥을 위해",
+            "2. 한국어학원을 통한 선교를 위해"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-worship",
+          "sourcePage": 4,
+          "sourceOrder": 1,
+          "type": "service",
+          "title": "주일낮예배",
+          "subtitle": "<할렐루야 하나님을 예배합시다>",
+          "facts": [
+            "오후 3:30",
+            "인도 담임목사",
+            "하나님은 영이시니 예배하는 자가 영과 진리로 예배할지니라."
+          ],
+          "columns": [],
+          "leadingMarker": true,
+          "rows": [
+            [
+              "*",
+              "묵상기도",
+              "",
+              "다같이"
+            ],
+            [
+              "*",
+              "기원",
+              "",
+              "인도자"
+            ],
+            [
+              "*",
+              "개회찬송",
+              "감사해요",
+              "다같이"
+            ],
+            [
+              "*",
+              "성시교독",
+              "45. 시편 103편",
+              "다같이"
+            ],
+            [
+              "*",
+              "신앙고백",
+              "",
+              "다같이"
+            ],
+            [
+              "",
+              "찬송",
+              "285장",
+              "다같이"
+            ],
+            [
+              "",
+              "감사와 참회의 기도",
+              "",
+              "다같이"
+            ],
+            [
+              "",
+              "기도",
+              "",
+              "장명희 집사"
+            ],
+            [
+              "",
+              "주기도문",
+              "",
+              "다같이"
+            ],
+            [
+              "",
+              "성경봉독",
+              "잠언 18:21",
+              "다같이"
+            ],
+            [
+              "",
+              "특송",
+              "315장",
+              "다함께"
+            ],
+            [
+              "",
+              "말씀선포",
+              "<인생을 결정하는 힘>",
+              "담임목사"
+            ],
+            [
+              "",
+              "헌금찬송",
+              "588장",
+              "다같이"
+            ],
+            [
+              "",
+              "교회광고",
+              "",
+              "담임목사"
+            ],
+            [
+              "*",
+              "폐회송",
+              "감사",
+              "다같이"
+            ],
+            [
+              "*",
+              "축도",
+              "",
+              "담임목사"
+            ]
+          ],
+          "footnote": "* 는 다함께 일어납니다.",
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-group-meetings",
+          "sourcePage": 4,
+          "sourceOrder": 2,
+          "type": "table",
+          "title": "주일 목장 모임 4:30",
+          "columns": [],
+          "rows": [
+            [
+              "여성목장",
+              "교육관"
+            ],
+            [
+              "남성목장",
+              "교육관"
+            ],
+            [
+              "청년목장",
+              "교육관"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "next-week-greeting",
+          "sourcePage": 4,
+          "sourceOrder": 3,
+          "type": "text-list",
+          "items": [
+            "<주안에서 사랑합니다.>"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "next-week-volunteers",
+          "sourcePage": 4,
+          "sourceOrder": 4,
+          "type": "table",
+          "title": "다음 주 봉사자",
+          "columns": [],
+          "rows": [
+            [
+              "11월 안내",
+              "장명희 집사"
+            ],
+            [
+              "12월 안내",
+              "박순자 권사"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-school-schedule",
+          "sourcePage": 4,
+          "sourceOrder": 5,
+          "type": "table",
+          "title": "주일학교 오전 9:30",
+          "subtitle": "오전 9:30 / 최민솔 전도사",
+          "columns": [
+            "날짜",
+            "기도자",
+            "헌금위원"
+          ],
+          "rows": [
+            [
+              "11.08",
+              "안시우",
+              "이승우"
+            ],
+            [
+              "11.15",
+              "안시연",
+              "강우연"
+            ],
+            [
+              "11.22",
+              "이현우",
+              "김시우"
+            ],
+            [
+              "11.29",
+              "김시우",
+              "이현우"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "sunday-school-study",
+          "sourcePage": 4,
+          "sourceOrder": 6,
+          "type": "table",
+          "columns": [],
+          "rows": [
+            [
+              "성경말씀",
+              "하브루타 성경읽기"
+            ],
+            [
+              "말씀",
+              "최민솔 전도사"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "middle-school-study",
+          "sourcePage": 4,
+          "sourceOrder": 7,
+          "type": "table",
+          "title": "중고등부 성경공부 모임",
+          "columns": [],
+          "rows": [
+            [
+              "시간",
+              "4:30"
+            ],
+            [
+              "장소",
+              "본당"
+            ],
+            [
+              "내용",
+              "신앙기초 세우기"
+            ],
+            [
+              "인도",
+              "최철민 목사"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "wednesday-prayer",
+          "sourcePage": 4,
+          "sourceOrder": 8,
+          "type": "table",
+          "title": "수요 기도회",
+          "subtitle": "저녁 8:00 | 인도: 최철민 목사",
+          "columns": [],
+          "rows": [
+            [
+              "찬송",
+              "다같이"
+            ],
+            [
+              "기도",
+              "다같이"
+            ],
+            [
+              "찬송",
+              "다같이"
+            ],
+            [
+              "성경봉독",
+              "인도자"
+            ],
+            [
+              "말씀",
+              "인도자"
+            ],
+            [
+              "마태복음 강해",
+              ""
+            ],
+            [
+              "찬송",
+              "다같이"
+            ],
+            [
+              "주기도문",
+              "다같이"
+            ]
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "friday-prayer",
+          "sourcePage": 4,
+          "sourceOrder": 9,
+          "type": "text-list",
+          "title": "금요 기도회",
+          "items": [
+            "너는 내게 부르짖으라",
+            "금요일 오후 9:00"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        },
+        {
+          "id": "dawn-prayer",
+          "sourcePage": 4,
+          "sourceOrder": 10,
+          "type": "text-list",
+          "title": "새벽 기도회 (월-금)",
+          "items": [
+            "누가복음 강해",
+            "새벽 5:30"
+          ],
+          "publicStatus": "published",
+          "approvalStatus": "approved"
+        }
+      ]
+    }
   }
 ]
