@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createBulletinSeo, createSeoDraft, createSermonSeo, prepareApprovedSeoRegistration, resolveSeo } from './seo-content.mjs';
+import { createBulletinSeo, createSeoDraft, createSermonSeo, prepareApprovedSeoRegistration, resolveSeo, validatePublishedSeo } from './seo-content.mjs';
 
 const sermons = [{ id: 'sermon-1', slug: 'sermon-1', date: '2026-11-01', title: '위기 속의 감사', scripture: '다니엘 6:10', preacher: '최철민 목사', publicStatus: 'published', approvalStatus: 'approved' }];
 const bulletins = [{ id: 'bulletin-1', slug: '2026-11-01', date: '2026-11-01', issueNumber: '제14권 44호', title: '2026년 11월 1일 주보', description: '2026년 11월 1일 파주꽃동산교회 주보', relatedSermonId: 'sermon-1', publicStatus: 'published', approvalStatus: 'approved' }];
@@ -35,5 +35,9 @@ assert.equal(resolveSeo(prepared.data.sermons[0], { title: '기존 제목', desc
 const privateCandidate = structuredClone(approved);
 privateCandidate.items.sermons[0].seo.description = '문의 010-1234-5678';
 assert.ok(prepareApprovedSeoRegistration({ draft: privateCandidate, sermons, bulletins }).errors.some((error) => error.includes('private')));
+
+const fallbackSeo = createSermonSeo(sermons[0], bulletins[0]);
+assert.deepEqual(validatePublishedSeo(fallbackSeo, new Set(['/sermons/', '/bulletins/', '/sermons/sermon-1/', '/bulletins/2026-11-01/'])), []);
+assert.ok(validatePublishedSeo({ title: 'valid', description: 'valid', internalLinks: [{ label: 'external', path: 'https://example.com' }] }, new Set()).length > 0);
 
 console.log('seo-content tests: PASS (draft, approval gate, approved metadata, privacy, relative links)');

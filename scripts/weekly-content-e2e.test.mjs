@@ -89,8 +89,10 @@ const readPublicFiles = async () => {
     'index.html',
     'sermons/index.html',
     'sermons/e2e-test-only-sermon-2026-10-12/index.html',
+    'sermons/2026-11-08/index.html',
     'bulletins/index.html',
     'bulletins/2026-10-12/index.html',
+    'bulletins/2026-11-08/index.html',
     'sitemap.xml',
     'robots.txt'
   ];
@@ -181,6 +183,23 @@ try {
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/bulletins\/2026-10-12\//);
   assert.match(publicFiles['robots.txt'], /Sitemap: https:\/\/pajuflowergarden\.org\/sitemap\.xml/);
+  const baselineSermon = originalSermons.find((item) => item.date === '2026-11-08');
+  const baselineBulletin = originalBulletins.find((item) => item.date === '2026-11-08');
+  assert.ok(baselineSermon && baselineBulletin, '2026-11-08 regression baseline must exist');
+  assert.ok(publicFiles['sermons/2026-11-08/index.html'].includes(baselineSermon.title));
+  assert.match(publicFiles['sermons/2026-11-08/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/2026-11-08\//);
+  assert.match(publicFiles['sermons/2026-11-08/index.html'], /property="og:title"/);
+  assert.match(publicFiles['sermons/2026-11-08/index.html'], /twitter:title/);
+  assert.match(publicFiles['sermons/2026-11-08/index.html'], /Article/);
+  assert.match(publicFiles['sermons/2026-11-08/index.html'], /BreadcrumbList/);
+  assert.match(publicFiles['sermons/2026-11-08/index.html'], /jc6jWU9arlg/);
+  assert.ok(publicFiles['bulletins/2026-11-08/index.html'].includes(baselineBulletin.title));
+  assert.match(publicFiles['bulletins/2026-11-08/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/bulletins\/2026-11-08\//);
+  assert.match(publicFiles['bulletins/2026-11-08/index.html'], /property="og:title"/);
+  assert.match(publicFiles['bulletins/2026-11-08/index.html'], /twitter:title/);
+  assert.match(publicFiles['bulletins/2026-11-08/index.html'], /BreadcrumbList/);
+  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/2026-11-08\//);
+  assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/bulletins\/2026-11-08\//);
   for (const [file, content] of Object.entries(publicFiles)) {
     assert.doesNotMatch(content, /TEST_ONLY_PRIVATE_INPUT|private-p0|sourceReference|evidence/i, `private data leaked in ${file}`);
     if (file !== 'index.html') assert.doesNotMatch(content, /010-\d{4}-\d{4}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i, `private contact leaked in ${file}`);

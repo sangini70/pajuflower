@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertValidContent } from './validate-content.mjs';
 import { createBulletinDocument, renderBulletinDocument } from './bulletin-layout.mjs';
-import { createBulletinSeo, createSermonSeo, resolveSeo } from './seo-content.mjs';
+import { createBulletinSeo, createSermonSeo, resolveSeo, validatePublishedSeo } from './seo-content.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -20,6 +20,13 @@ const approvedDetail = isPublic;
 const newestFirst = (a, b) => b.date.localeCompare(a.date) || String(a.id || a.slug).localeCompare(String(b.id || b.slug));
 const publicSermons = sermons.filter(isPublic).sort(newestFirst);
 const publicBulletins = bulletins.filter(isPublic).sort(newestFirst);
+const publicationPaths = new Set([
+  '/',
+  '/sermons/',
+  ...publicSermons.map((sermon) => `/sermons/${sermon.slug}/`),
+  '/bulletins/',
+  ...publicBulletins.map((bulletin) => `/bulletins/${bulletin.slug}/`)
+]);
 
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
@@ -61,7 +68,12 @@ const shell = ({ title, description, pathname, body, ogType = 'website', jsonLd 
 
 const sermonById = new Map(publicSermons.map((sermon) => [sermon.id, sermon]));
 const bulletinBySermonId = new Map(publicBulletins.map((bulletin) => [bulletin.relatedSermonId, bulletin]));
-const seoValue = (item, fallback) => resolveSeo(item, fallback);
+const seoValue = (item, fallback) => {
+  const seo = resolveSeo(item, fallback);
+  const errors = validatePublishedSeo(seo, publicationPaths);
+  if (errors.length) throw new Error(`Published SEO validation failed for ${item.id}:\n- ${errors.join('\n- ')}`);
+  return seo;
+};
 
 const breadcrumbJsonLd = (items) => ({
   '@context': 'https://schema.org',

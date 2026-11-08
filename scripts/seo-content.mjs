@@ -3,6 +3,25 @@ const isText = (value) => typeof value === 'string' && value.trim().length > 0;
 export const isApprovedSeo = (seo) => seo?.publicStatus === 'published' && seo?.approvalStatus === 'approved';
 export const resolveSeo = (item, fallback) => isApprovedSeo(item?.seo) ? item.seo : fallback;
 
+const isRelativePath = (value) => isText(value) && value.startsWith('/') && !value.startsWith('//') && !value.includes('://');
+
+export const validatePublishedSeo = (seo, knownPaths = new Set()) => {
+  const errors = [];
+  for (const field of ['title', 'description']) {
+    if (!isText(seo?.[field])) errors.push(`seo.${field} must be a non-empty string`);
+  }
+  if (!Array.isArray(seo?.internalLinks)) errors.push('seo.internalLinks must be an array');
+  else for (const [index, link] of seo.internalLinks.entries()) {
+    if (!isText(link?.label) || !isRelativePath(link.path) || !knownPaths.has(link.path)) {
+      errors.push(`seo.internalLinks[${index}] must use a known relative path`);
+    }
+  }
+  if (/REFERENCE[\\/]|(?:01[016789][ -]?\d{3,4}[ -]?\d{4})|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(JSON.stringify(seo))) {
+    errors.push('seo contains private or source-reference data');
+  }
+  return errors;
+};
+
 const archiveLinks = (kind) => [{ label: kind === 'sermon' ? '설교 목록' : '주보 목록', path: `/${kind === 'sermon' ? 'sermons' : 'bulletins'}/` }];
 const koreanDate = (value) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
