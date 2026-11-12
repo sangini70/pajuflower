@@ -9,10 +9,10 @@ description: Design, implement, and validate a semantic church bulletin layout e
 
 Use this skill only when a task concerns semantic re-editing, automatic layout planning, A4 pagination, print rendering, or preservation validation for an approved bulletin. It does not replace:
 
-- `pajuflower-web-maintenance` for general website, CSS, SEO, routing, or Vite/Vercel maintenance.
+- `pajuflower-web-maintenance` for general website, CSS, SEO, routing, or Vite/Firebase Hosting maintenance.
 - `church-content-publishing` for source intake, privacy review, approval, duplicate checks, or JSON registration.
 
-Read and follow `AGENTS.md`, the project constitution, `PAJU_FLOWER_WORKFLOW.md`, and `WEBSITE_BRIEF.md` before implementation. Existing user changes are preserved and the current Vite/Vercel architecture remains the baseline.
+Read and follow `AGENTS.md`, the project constitution, `PAJU_FLOWER_WORKFLOW.md`, and `WEBSITE_BRIEF.md` before implementation. Existing user changes are preserved and the current Vite/Firebase Hosting architecture remains the baseline. Vercel is historical only.
 
 Apply the project reference standard in `references/BULLETIN_LAYOUT_STANDARD.md` when creating or reviewing a bulletin. The standard is an operational supplement, not a replacement for the constitution or publishing rules.
 
@@ -111,6 +111,7 @@ String equality alone is insufficient for structural transformations. Use a prov
 - Do not introduce a CMS, database, API server, framework replacement, or external layout service.
 - Do not modify approval status, register a bulletin, expose private content, or publish source images.
 - Do not commit, push, or deploy without separate explicit approval.
+- When deployment is approved, use Firebase Hosting for project `paju-flower-church` and public directory `dist/`; do not run Vercel CLI or deploy to Vercel.
 - Report confirmed facts, measured results, overflow, and unresolved design decisions separately.
 
 ## Required implementation report

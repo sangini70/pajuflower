@@ -20,7 +20,7 @@
 ## 기본 작업 방식
 
 - 먼저 실제 파일·코드·생성 결과를 읽고 확인된 사실과 추정을 구분한다.
-- 기존 Vite/Vercel 구조를 우선 유지하고 필요한 최소 범위만 수정한다.
+- 기존 Vite 정적 구조와 Firebase Hosting 운영 구조를 우선 유지하고 필요한 최소 범위만 수정한다.
 - 원본, 비공개 초안, 공개 데이터, 생성 결과물을 서로 구분한다.
 - 사용자가 승인하지 않은 구현·Git 반영·배포는 수행하지 않는다.
 - 현재 없는 자료나 문서는 추정해 만들지 않는다.
@@ -41,7 +41,8 @@
 - 정적 생성: `scripts/generate-static-content.mjs`
 - 공통 콘텐츠 셸: `templates/content-shell.html`
 - Vite root 및 추적되는 정적 결과물: `dist/`
-- Vercel 빌드 출력: `vercel-build/` (Git 제외)
+- Firebase Hosting 배포 출력: `dist/`
+- `vercel-build/`는 과거 Vercel용 보조 출력으로 보존하며 Firebase 배포에는 사용하지 않는다.
 
 주간 콘텐츠 작업에서는 현재 스크립트와 다음 검증 명령을 우선 재사용한다.
 
@@ -69,11 +70,19 @@ npm run build
 
 ## Git과 배포
 
-- 기본적으로 commit, push, Vercel 배포를 수행하지 않는다.
+- 기본적으로 commit, push, Firebase 배포를 수행하지 않는다.
 - 명시적 승인이 있을 때만 `git status`, `git diff`, 대상 파일 목록을 확인한 뒤 선택적으로 staging한다.
 - `git add -A`로 전체 파일을 추가하지 않는다.
 - `REFERENCE/`, `drafts/`, 환경변수, 인증 정보, 원본 개인정보는 staging 대상에서 제외한다.
-- 코드 검증, 빌드, GitHub 반영, Vercel 배포, 운영 URL 확인은 서로 다른 결과로 보고한다.
+- 코드 검증, 빌드, GitHub 반영, Firebase 배포, 운영 URL 확인은 서로 다른 결과로 보고한다.
+
+현재 공식 운영 배포는 Firebase Hosting이다.
+
+- Firebase 프로젝트: `paju-flower-church`
+- Hosting 공개 디렉터리: `dist/`
+- 기본 배포 명령: `firebase deploy --only hosting --project paju-flower-church`
+- 공식 운영 URL: `https://pajuflowergarden.org`
+- Vercel CLI 로그인·인증·배포는 실행하지 않는다. `vercel.json`과 `vercel-build/`는 과거 운영 기록으로만 보존한다.
 
 ## 보고
 

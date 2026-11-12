@@ -66,6 +66,7 @@ npm run build
 ## Git과 배포
 
 - 실제 주보 등록과 공개 배포는 분리한다.
-- commit, push, Vercel 배포는 사용자 승인이 없으면 수행하지 않는다.
+- commit, push, Firebase Hosting 배포는 사용자 승인이 없으면 수행하지 않는다.
+- 공식 배포 대상은 Firebase 프로젝트 `paju-flower-church`의 `dist/`이며, Vercel CLI와 Vercel 배포는 사용하지 않는다.
 - 승인 후에도 명시된 관련 파일만 staging한다.
 - `REFERENCE/`, `drafts/`, 원본 이미지·PDF, 개인정보는 Git에 추가하지 않는다.

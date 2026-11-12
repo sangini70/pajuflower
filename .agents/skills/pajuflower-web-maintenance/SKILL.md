@@ -1,13 +1,13 @@
 ---
 name: pajuflower-web-maintenance
-description: Maintain the Paju Flower Church Vite/Vercel static website, including HTML, CSS, metadata, routing, and generated-page verification, while preserving the existing design and content publishing boundaries.
+description: Maintain the Paju Flower Church Vite/Firebase Hosting static website, including HTML, CSS, metadata, routing, and generated-page verification, while preserving the existing design and content publishing boundaries.
 ---
 
 # Paju Flower 웹 유지보수
 
 ## 적용 범위
 
-이 Skill은 파주꽃동산교회 웹사이트의 기존 Vite/Vercel 정적 구조를 조사하거나 최소 범위로 수정할 때 사용한다.
+이 Skill은 파주꽃동산교회 웹사이트의 기존 Vite 정적 구조와 Firebase Hosting 배포 구조를 조사하거나 최소 범위로 수정할 때 사용한다. Vercel은 과거 운영 기록으로만 취급한다.
 
 적용 대상:
 
@@ -15,6 +15,7 @@ description: Maintain the Paju Flower Church Vite/Vercel static website, includi
 - `dist/content.css`와 관련 레이아웃
 - `templates/content-shell.html`
 - `scripts/generate-static-content.mjs`
+- `firebase.json` 및 `.firebaserc`의 Hosting 설정
 - title, description, canonical, Open Graph, JSON-LD, sitemap, robots
 - PC·모바일 반응형과 내부 링크
 
@@ -36,6 +37,13 @@ description: Maintain the Paju Flower Church Vite/Vercel static website, includi
 - 기존 canonical·Open Graph·JSON-LD·sitemap·robots
 - 변경 전후 내부 링크와 이미지 경로
 - 현재 Git 변경 사항 및 사용자 승인 범위
+
+## 배포 기준
+
+- 공식 운영 플랫폼은 Firebase Hosting이다.
+- 공개 디렉터리는 `dist/`, 프로젝트는 `paju-flower-church`다.
+- 배포는 별도 승인 후 `firebase deploy --only hosting --project paju-flower-church`로 수행한다.
+- Vercel CLI 로그인·인증·배포는 실행하지 않는다. `vercel.json`과 `vercel-build/`는 과거 기록으로만 보존한다.
 
 ## 검증
 
