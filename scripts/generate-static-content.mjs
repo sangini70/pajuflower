@@ -56,6 +56,18 @@ const youtubeEmbed = (sermon, compact = false) => {
   const title = `${sermon.title} YouTube video`;
   return `<div class="sermon-video${compact ? ' sermon-video-compact' : ''}"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="${escapeHtml(title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
 };
+const youtubeThumbnailUrl = (sermon, videoId) => {
+  const candidate = typeof sermon.thumbnail === 'string' ? sermon.thumbnail.trim() : '';
+  if (candidate) {
+    try {
+      const url = new URL(candidate);
+      if (url.protocol === 'https:') return candidate;
+    } catch {
+      // Invalid thumbnail candidates are ignored; the official YouTube URL is used below.
+    }
+  }
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+};
 
 const shell = ({ title, description, pathname, body, ogType = 'website', jsonLd = [] }) => shellTemplate
   .replaceAll('{{TITLE}}', escapeHtml(title))
@@ -134,6 +146,8 @@ const sermonDetail = (sermon) => {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
     name: sermon.title,
+    description: sermon.summary,
+    thumbnailUrl: youtubeThumbnailUrl(sermon, videoId),
     uploadDate: isoDate(sermon.date),
     embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
     url: sermon.youtubeUrl,

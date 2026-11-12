@@ -10,6 +10,7 @@
     "seo:draft": "node scripts/generate-seo-draft.mjs",
     "seo:register": "node scripts/register-approved-seo.mjs",
     "seo:test": "node scripts/seo-content.test.mjs",
+    "video:test": "node scripts/video-structured-data.test.mjs",
     "validate": "node scripts/validate-content.test.mjs",
     "draft:test": "node scripts/create-content-draft.test.mjs",
     "register:test": "node scripts/register-approved-content.test.mjs",
