@@ -83,5 +83,19 @@
     "publicStatus": "published",
     "approvalStatus": "approved",
     "updatedAt": "2026-11-09"
+  },
+  {
+    "id": "sermon-2026-11-15",
+    "slug": "2026-11-15",
+    "date": "2026-11-15",
+    "title": "감사하는 힘",
+    "scripture": "하박국 3:17~18",
+    "preacher": "최철민 목사",
+    "summary": "1. 없어도 감사할 수 있는 능력\n2. 하나님 때문에 감사할 수 있는 능력\n3. 도약하는 힘을 주시기 때문에 가능합니다.",
+    "youtubeUrl": "https://youtu.be/BwgC3jTVzbo",
+    "thumbnail": null,
+    "publicStatus": "published",
+    "approvalStatus": "approved",
+    "updatedAt": "2026-11-16"
   }
 ]

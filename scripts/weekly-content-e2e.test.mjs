@@ -106,6 +106,9 @@ try {
   const bulletinsFile = path.join(tempContent, 'bulletins.json');
   const originalSermons = await loadJson(path.join(projectRoot, 'content', 'sermons.json'));
   const originalBulletins = await loadJson(path.join(projectRoot, 'content', 'bulletins.json'));
+  const latestSermon = [...originalSermons].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const latestBulletin = [...originalBulletins].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const latestVideoId = latestSermon?.youtubeUrl?.match(/(?:youtu\.be\/|v=)([^?&/]+)/)?.[1];
 
   const draft = createContentDraft({ input: fakeInput, sermons: originalSermons, bulletins: originalBulletins });
   assert.equal(draft.draftStatus, 'REVIEW_REQUIRED');
@@ -165,8 +168,8 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /E2E TEST ONLY Sermon/);
   assert.match(publicFiles['bulletins/index.html'], /2026-10-12/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /E2E TEST ONLY Bulletin/);
-  assert.match(publicFiles['index.html'], /인생을 결정하는 혀/);
-  assert.match(publicFiles['index.html'], /2026년 11월 8일 주보/);
+  assert.ok(latestSermon && publicFiles['index.html'].includes(latestSermon.title));
+  assert.ok(latestBulletin && publicFiles['index.html'].includes(latestBulletin.title));
   assert.doesNotMatch(publicFiles['index.html'], /E2E TEST ONLY monthly theme|E2E TEST ONLY prayer|E2E TEST ONLY news/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /rel="canonical" href="https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /property="og:title"/);
@@ -177,7 +180,7 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /유튜브에서 보기/);
-  assert.match(publicFiles['index.html'], /youtube-nocookie\.com\/embed\/jc6jWU9arlg/);
+  assert.ok(latestVideoId && publicFiles['index.html'].includes(`youtube-nocookie.com/embed/${latestVideoId}`));
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /CreativeWork/);
   assert.match(publicFiles['sitemap.xml'], /https:\/\/pajuflowergarden\.org\/sermons\/e2e-test-only-sermon-2026-10-12\//);
