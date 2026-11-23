@@ -38,8 +38,7 @@
     <script>
       (() => {
         const override = new URLSearchParams(window.location.search).get('season');
-        const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-        const active = override === 'christmas' || (override !== 'default' && today >= '2026-12-01' && today < '2027-01-01');
+        const active = override !== 'default';
         document.documentElement.dataset.season = active ? 'christmas' : 'default';
       })();
     </script>
