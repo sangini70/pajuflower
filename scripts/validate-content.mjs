@@ -67,6 +67,63 @@ const checkPublicValue = (value, path, errors) => {
   }
 };
 
+const SERMON_HEADING_PATTERN = /^(첫째|둘째|셋째|넷째|다섯째|여섯째|일곱째|여덟째|아홉째|열째)\s*[,.:：]\s*.+$/;
+
+export const splitSermonSummary = (summary) => String(summary || '')
+  .split(/\n{2,}/)
+  .map((block) => block.trim())
+  .filter(Boolean);
+
+export const validateSermonStructure = (summary) => {
+  const blocks = splitSermonSummary(summary);
+  const errors = [];
+  if (!blocks.length) return ['summary must contain at least one non-empty paragraph'];
+  for (const [index, block] of blocks.entries()) {
+    const lines = block.split('\n').map((line) => line.trim()).filter(Boolean);
+    if (!lines.length || !SERMON_HEADING_PATTERN.test(lines[0])) continue;
+    if (lines.slice(1).join('\n').trim().length === 0) {
+      errors.push(`summary section ${index + 1} has a heading without an explanation paragraph`);
+    }
+  }
+  return errors;
+};
+
+const checkWebEditionStructure = (bulletin, path, errors) => {
+  const edition = bulletin.webEdition;
+  if (!edition || edition.publicStatus !== 'published' || edition.approvalStatus !== 'approved' || !Array.isArray(edition.sections)) return;
+  for (const [sectionIndex, section] of edition.sections.entries()) {
+    const sectionPath = `${path}.webEdition.sections[${sectionIndex}]`;
+    const rows = Array.isArray(section.rows) ? section.rows : null;
+    const columns = Array.isArray(section.columns) ? section.columns : null;
+    if (['table', 'service'].includes(section.type)) {
+      if (!rows?.length) errors.push(`${sectionPath} ${section.type} must contain at least one row`);
+      else {
+        const expectedColumns = columns?.length || rows[0].length;
+        for (const [rowIndex, row] of rows.entries()) {
+          if (!Array.isArray(row) || row.length !== expectedColumns) errors.push(`${sectionPath}.rows[${rowIndex}] must contain ${expectedColumns} cells`);
+          if (Array.isArray(row) && !row.some((cell) => typeof cell === 'string' && cell.trim())) errors.push(`${sectionPath}.rows[${rowIndex}] must contain visible content`);
+        }
+      }
+    }
+    if (['numbered-list', 'text-list'].includes(section.type)) {
+      if (!Array.isArray(section.items) || !section.items.length) errors.push(`${sectionPath} ${section.type} must contain at least one item`);
+      else if (section.items.some((item) => (typeof item === 'string' && !item.trim()) || (Array.isArray(item) && !item.some((value) => String(value || '').trim())))) errors.push(`${sectionPath} contains an empty list item`);
+    }
+    if (section.type === 'article') {
+      const hasParagraph = Array.isArray(section.paragraphs) && section.paragraphs.some((paragraph) => typeof paragraph === 'string' && paragraph.trim());
+      const hasSubsection = Array.isArray(section.subsections) && section.subsections.some((subsection) => subsection?.title?.trim() && Array.isArray(subsection.paragraphs) && subsection.paragraphs.some((paragraph) => paragraph?.trim()));
+      const hasConclusion = typeof section.conclusion === 'string' && section.conclusion.trim();
+      if (!hasParagraph && !hasSubsection && !hasConclusion) errors.push(`${sectionPath} article must contain visible body text`);
+      for (const [subsectionIndex, subsection] of (section.subsections || []).entries()) {
+        if (!subsection?.title?.trim()) errors.push(`${sectionPath}.subsections[${subsectionIndex}] missing title`);
+        if (!Array.isArray(subsection?.paragraphs) || !subsection.paragraphs.some((paragraph) => paragraph?.trim())) errors.push(`${sectionPath}.subsections[${subsectionIndex}] missing explanation paragraph`);
+      }
+    }
+    if (section.type === 'verse' && (!section.text?.trim() || !section.reference?.trim())) errors.push(`${sectionPath} verse must contain text and reference`);
+    if (section.type === 'cover' && (!section.churchName?.trim() || !section.date?.trim())) errors.push(`${sectionPath} cover must contain churchName and date`);
+  }
+};
+
 const checkBulletinDetails = (bulletins, errors) => {
   for (const [index, bulletin] of bulletins.entries()) {
     const path = `bulletins[${index}]`;
@@ -167,6 +224,7 @@ const checkBulletinDetails = (bulletins, errors) => {
         }
         if (edition.reviewRequired !== undefined && !Array.isArray(edition.reviewRequired)) errors.push(`${path}.webEdition.reviewRequired must be an array`);
       }
+      checkWebEditionStructure(bulletin, path, errors);
     }
     if (bulletin.publicStatus === 'published' && bulletin.approvalStatus === 'approved') {
       for (const field of ['monthlyTheme', 'featuredChurchNews', 'worshipSchedule', 'churchNews', 'worshipOrder', 'prayerTopics', 'faithGuide', 'webEdition']) {
@@ -209,6 +267,10 @@ export const validateContent = ({ sermons, bulletins }) => {
   }
 
   checkPublicText(sermons, 'sermons', ['title', 'scripture', 'preacher', 'summary', 'youtubeUrl', 'thumbnail'], errors);
+  for (const [index, sermon] of sermons.entries()) {
+    if (sermon.publicStatus !== 'published' || sermon.approvalStatus !== 'approved') continue;
+    for (const error of validateSermonStructure(sermon.summary)) errors.push(`sermons[${index}] ${error}`);
+  }
   checkPublicText(bulletins, 'bulletins', ['title', 'description', 'issueNumber', 'publicFile'], errors);
   checkBulletinDetails(bulletins, errors);
   return errors;

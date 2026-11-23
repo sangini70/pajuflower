@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validateContent } from './validate-content.mjs';
+import { validateContent, validateSermonStructure } from './validate-content.mjs';
 import { createBulletinDocument, renderBulletinDocument } from './bulletin-layout.mjs';
 
 const load = async (name) => JSON.parse(await readFile(new URL(`../content/${name}.json`, import.meta.url), 'utf8'));
@@ -10,6 +10,9 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 const errorsFor = (sermons = baseSermons, bulletins = baseBulletins) => validateContent({ sermons, bulletins });
 
 assert.deepEqual(errorsFor(), [], 'normal content must pass');
+for (const sermon of baseSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved')) {
+  assert.deepEqual(validateSermonStructure(sermon.summary), [], `${sermon.id} sermon structure must be complete`);
+}
 assert.ok(baseSermons.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length >= 5);
 assert.ok(baseBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved').length >= 5);
 
@@ -19,7 +22,9 @@ assert.equal(restoredBulletin.webEdition.publicStatus, 'published');
 assert.equal(restoredBulletin.webEdition.approvalStatus, 'approved');
 assert.deepEqual([...new Set(restoredBulletin.webEdition.sections.map((section) => section.sourcePage))], [1, 2, 3, 4]);
 const restoredDocument = createBulletinDocument(restoredBulletin, restoredSermon);
-const restoredHtml = renderBulletinDocument(restoredDocument).html;
+const restoredRendered = renderBulletinDocument(restoredDocument);
+const restoredHtml = restoredRendered.html;
+assert.deepEqual(restoredRendered.validation.missingBlocks, []);
 assert.ok(restoredDocument.sourcePaths.length > 50, 'restored bulletin must retain item-level JSON provenance');
 assert.match(restoredHtml, /bulletin-table-columns-2/, 'two-column bulletin tables must retain two cells per row');
 assert.match(restoredHtml, /bulletin-table-columns-3/, 'three-column bulletin tables must retain three cells per row');
@@ -55,6 +60,20 @@ assert.match(octoberEleventhHtml, /&lt;신앙생활을 위한 10가지 믿음의
 assert.match(octoberEleventhHtml, /&lt;새사람이 된 삭개오&gt;/);
 assert.equal((octoberEleventhHtml.match(/bulletin-table-head/g) || []).length, 2, 'only source tables with printed column headings should render headers');
 assert.doesNotMatch(octoberEleventhHtml, /010-9292-3405|jmark@hanmail\.net|이로은|이로운|권한진|권예진|권은진|교통사고/);
+
+for (const bulletin of baseBulletins.filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved')) {
+  const sermon = baseSermons.find((item) => item.id === bulletin.relatedSermonId);
+  const rendered = renderBulletinDocument(createBulletinDocument(bulletin, sermon));
+  assert.deepEqual(rendered.validation.missingBlocks, [], `${bulletin.id} must render every approved block`);
+}
+
+const incompleteSermon = clone(baseSermons.find((item) => item.date === '2026-11-22'));
+incompleteSermon.summary = '첫째, 설명이 누락된 본론';
+assert.ok(validateSermonStructure(incompleteSermon.summary).some((error) => error.includes('without an explanation paragraph')));
+
+const incompleteBulletin = clone(restoredBulletin);
+incompleteBulletin.webEdition.sections.find((section) => section.id === 'sunday-worship').rows = [];
+assert.ok(errorsFor(baseSermons, [incompleteBulletin, ...baseBulletins.filter((item) => item.id !== incompleteBulletin.id)]).some((error) => error.includes('must contain at least one row')));
 
 const duplicateSermons = clone(baseSermons);
 duplicateSermons.push({ ...clone(baseSermons[0]), id: 'sermon-duplicate' });

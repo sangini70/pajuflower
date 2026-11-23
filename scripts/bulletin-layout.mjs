@@ -163,6 +163,64 @@ const defaultSectionTitles = {
 };
 const noHeaderTableBlocks = new Set(['sunday-worship', 'next-week-volunteers', 'sunday-schedule']);
 
+const validateBulletinBlock = (block) => {
+  if (!block?.id || !block?.type) throw new Error('Bulletin layout block is missing id or type');
+  if (['table', 'service'].includes(block.type)) {
+    if (!Array.isArray(block.rows) || !block.rows.length) throw new Error(`${block.id} must contain at least one table row`);
+    tableColumnCount(block.columns, block.rows);
+    if (block.rows.some((row) => !row.some((cell) => String(cell || '').trim()))) throw new Error(`${block.id} contains an empty table row`);
+  }
+  if (['numbered-list', 'text-list'].includes(block.type) && (!Array.isArray(block.items) || !block.items.length)) throw new Error(`${block.id} must contain visible list items`);
+  if (block.type === 'article') {
+    const hasParagraph = block.paragraphs?.some((paragraph) => paragraph?.trim());
+    const hasSubsection = block.subsections?.some((subsection) => subsection?.title?.trim() && subsection.paragraphs?.some((paragraph) => paragraph?.trim()));
+    const hasConclusion = block.conclusion?.trim();
+    if (!hasParagraph && !hasSubsection && !hasConclusion) throw new Error(`${block.id} must contain visible article text`);
+    if (block.subsections?.some((subsection) => !subsection?.title?.trim() || !subsection.paragraphs?.some((paragraph) => paragraph?.trim()))) throw new Error(`${block.id} contains a subsection without an explanation paragraph`);
+  }
+  if (block.type === 'verse' && (!block.text?.trim() || !block.reference?.trim())) throw new Error(`${block.id} must contain verse text and reference`);
+};
+
+const blockVisibleStrings = (block) => {
+  const values = [];
+  const add = (value) => { if (typeof value === 'string' && value.trim()) values.push(value); };
+  if (block.type !== 'metadata') add(block.title);
+  if (block.type === 'cover') {
+    for (const key of ['churchName', 'issueNumber', 'establishedDate', 'date', 'proclamation', 'verse', 'verseReference']) add(block[key]);
+  } else if (['table', 'service'].includes(block.type)) {
+    add(block.subtitle);
+    for (const fact of block.facts || []) add(fact);
+    if (!noHeaderTableBlocks.has(block.id) && Array.isArray(block.columns)) for (const column of block.columns) add(column);
+    for (const row of block.rows || []) for (const cell of row) add(cell);
+    add(block.footnote);
+  } else if (block.type === 'numbered-list') {
+    for (const [index, item] of (block.items || []).entries()) {
+      const parts = numberedItemParts(item, index);
+      add(parts.number);
+      for (const line of parts.lines) add(line);
+    }
+  } else if (block.type === 'text-list') {
+    for (const item of block.items || []) add(item);
+  } else if (block.type === 'article') {
+    for (const paragraph of block.paragraphs || []) add(paragraph);
+    for (const subsection of block.subsections || []) { add(subsection.title); for (const paragraph of subsection.paragraphs || []) add(paragraph); }
+    add(block.conclusion);
+  } else if (block.type === 'verse') {
+    add(block.text);
+    add(block.reference);
+  } else if (block.type === 'sermon') {
+    const sermon = block.items?.[0];
+    for (const key of ['title', 'scripture', 'preacher']) add(sermon?.[key]);
+  }
+  return [...new Set(values)];
+};
+
+const assertBlockTextRendered = (block, html) => {
+  for (const value of blockVisibleStrings(block)) {
+    if (!html.includes(escapeHtml(value))) throw new Error(`${block.id} source text was omitted from generated HTML: ${value}`);
+  }
+};
+
 const renderBlock = (block) => {
   const renderer = {
     metadata: renderMetadata, 'worship-order': renderWorshipOrder, sermon: renderSermon, theme: renderTheme, 'church-news': renderNews, schedule: renderSchedule, 'faith-guide': renderTextList, 'prayer-topics': renderTextList,
@@ -175,7 +233,9 @@ const renderBlock = (block) => {
 };
 
 export const renderBulletinDocument = (document) => {
+  document.blocks.forEach(validateBulletinBlock);
   const html = `<div class="bulletin-paper bulletin-paper-${document.validation.edition}"><div class="bulletin-columns">${document.blocks.map(renderBlock).join('')}</div></div>`;
+  document.blocks.forEach((block) => assertBlockTextRendered(block, html));
   const renderedIds = document.blocks.filter((block) => html.includes(`bulletin-block-${block.id.replaceAll('.', '-')}`)).map((block) => block.id);
   const missingBlocks = document.blocks.filter((block) => !renderedIds.includes(block.id)).map((block) => block.id);
   if (missingBlocks.length) throw new Error(`Bulletin layout omitted block(s): ${missingBlocks.join(', ')}`);

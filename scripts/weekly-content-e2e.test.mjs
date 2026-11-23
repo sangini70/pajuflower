@@ -41,7 +41,7 @@ const fakeInput = {
       title: 'E2E TEST ONLY Sermon',
       scripture: 'E2E TEST ONLY 1:1',
       preacher: 'E2E TEST ONLY Speaker',
-      summary: 'E2E TEST ONLY summary',
+      summary: 'E2E TEST ONLY introduction.\n\n첫째, E2E TEST ONLY first point.\nE2E TEST ONLY first explanation.\n\n둘째, E2E TEST ONLY second point.\nE2E TEST ONLY second explanation.\n\n셋째, E2E TEST ONLY third point.\nE2E TEST ONLY third explanation.\n\n넷째, E2E TEST ONLY fourth point.\nE2E TEST ONLY fourth explanation.\n\nE2E TEST ONLY conclusion.',
       slug: 'e2e-test-only-sermon-2026-10-12'
     }
   },
@@ -84,7 +84,7 @@ const copyFixture = async () => {
   await cp(path.join(projectRoot, 'scripts', 'copy-static-content.mjs'), path.join(tempScripts, 'copy-static-content.mjs'));
 };
 
-const readPublicFiles = async () => {
+const readPublicFiles = async (extraFiles = []) => {
   const files = [
     'index.html',
     'sermons/index.html',
@@ -97,7 +97,8 @@ const readPublicFiles = async () => {
     'bulletins/2026-11-22/index.html',
     'bulletins/2026-11-15/index.html',
     'sitemap.xml',
-    'robots.txt'
+    'robots.txt',
+    ...extraFiles
   ];
   return Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readFile(path.join(tempDist, file), 'utf8')])));
 };
@@ -109,6 +110,7 @@ try {
   const bulletinsFile = path.join(tempContent, 'bulletins.json');
   const originalSermons = await loadJson(path.join(projectRoot, 'content', 'sermons.json'));
   const originalBulletins = await loadJson(path.join(projectRoot, 'content', 'bulletins.json'));
+  const baselineBulletinHtmlBefore = await readFile(path.join(projectRoot, 'dist', 'bulletins', '2026-11-15', 'index.html'), 'utf8');
   const latestSermon = [...originalSermons].sort((a, b) => b.date.localeCompare(a.date))[0];
   const latestBulletin = [...originalBulletins].sort((a, b) => b.date.localeCompare(a.date))[0];
   const latestVideoId = latestSermon?.youtubeUrl?.match(/(?:youtu\.be\/|v=)([^?&/]+)/)?.[1];
@@ -166,9 +168,14 @@ try {
     cwd: tempRoot,
     env: { ...process.env, SITE_ORIGIN: 'https://pajuflowergarden.org' }
   });
-  const publicFiles = await readPublicFiles();
+  const publicFiles = await readPublicFiles(originalBulletins
+    .filter((item) => item.publicStatus === 'published' && item.approvalStatus === 'approved')
+    .map((item) => `bulletins/${item.slug}/index.html`));
   assert.match(publicFiles['sermons/index.html'], /e2e-test-only-sermon-2026-10-12/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /E2E TEST ONLY Sermon/);
+  const e2eSermonHtml = publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'];
+  assert.equal((e2eSermonHtml.match(/<h2>/g) || []).length, 4, 'sermon section count must follow approved structure');
+  assert.equal((e2eSermonHtml.match(/sermon-manuscript-section\"><h2>[^<]+<\/h2><p>/g) || []).length, 4, 'each sermon section must contain an explanation paragraph');
   assert.match(publicFiles['bulletins/index.html'], /2026-10-12/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /E2E TEST ONLY Bulletin/);
   assert.ok(latestSermon && publicFiles['index.html'].includes(latestSermon.title));
@@ -190,6 +197,7 @@ try {
   assert.match(publicFiles['bulletins/2026-11-22/index.html'], /bulletin-table-columns-4 bulletin-table-leading-marker/);
   const baselineBulletinHtml = publicFiles['bulletins/2026-11-15/index.html'];
   const latestBulletinHtml = publicFiles['bulletins/2026-11-22/index.html'];
+  assert.equal(baselineBulletinHtml, baselineBulletinHtmlBefore, '2026-11-15 bulletin output must remain unchanged');
   assert.match(baselineBulletinHtml, /bulletin-block-sunday-worship/);
   assert.match(latestBulletinHtml, /bulletin-block-sunday-worship/);
   assert.match(baselineBulletinHtml, /bulletin-table-leading-marker/);

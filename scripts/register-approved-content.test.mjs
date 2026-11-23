@@ -87,6 +87,7 @@ const bulletinOnlyDraft = () => ({
 const bulletinTestSermons = [...sermons, {
   id: 'sermon-2026-10-12', slug: 'sermon-2026-10-12', date: '2026-10-12',
   title: 'Isolated test sermon', scripture: 'Test 1:1', preacher: 'Test preacher',
+  summary: 'Test sermon summary',
   publicStatus: 'published', approvalStatus: 'approved'
 }];
 
