@@ -164,6 +164,7 @@ export const createContentDraft = ({ input, sermons, bulletins }) => {
     archiveStatus: 'draft'
   };
   Object.assign(bulletin, optionalBulletinDetails(bulletinInput, uncertainFields));
+  if (bulletinInput.webEdition !== undefined) bulletin.webEdition = clone(bulletinInput.webEdition);
 
   const conflicts = getConflicts({ sermons, bulletins }, sermon, bulletin);
   for (const conflict of conflicts) addReview(uncertainFields, `conflict.${conflict.type}`);

@@ -105,7 +105,8 @@ const renderSermonBody = (summary = '') => summary
     const lines = block.split('\n');
     const heading = /^(첫째|둘째|셋째),\s*(.+)$/.exec(lines[0].trim());
     if (!heading) return `<p>${escapeHtml(block)}</p>`;
-    return `<section class="sermon-manuscript-section"><h2>${escapeHtml(heading[0])}</h2><p>${escapeHtml(lines.slice(1).join('\n'))}</p></section>`;
+    const body = lines.slice(1).join('\n').trim();
+    return `<section class="sermon-manuscript-section"><h2>${escapeHtml(heading[0])}</h2>${body ? `<p>${escapeHtml(body)}</p>` : ''}</section>`;
   })
   .join('');
 

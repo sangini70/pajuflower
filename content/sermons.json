@@ -97,5 +97,19 @@
     "publicStatus": "published",
     "approvalStatus": "approved",
     "updatedAt": "2026-11-16"
+  },
+  {
+    "id": "sermon-2026-11-22",
+    "slug": "2026-11-22",
+    "date": "2026-11-22",
+    "title": "공정한 저울추",
+    "scripture": "신명기 25:13-15",
+    "preacher": "최철민 목사",
+    "summary": "첫째, 인간의 마음은 언제나 악하고 부패했다는 것입니다.\n\n둘째, 성도는 공정한 저울추를 사용하는 사람입니다.\n\n셋째, 하나님은 공정한 저울추를 사용하는 사람을 복 주십니다.",
+    "youtubeUrl": "https://youtu.be/YvlfB8pu5hY",
+    "thumbnail": null,
+    "publicStatus": "published",
+    "approvalStatus": "approved",
+    "updatedAt": "2026-11-23"
   }
 ]
