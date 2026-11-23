@@ -132,7 +132,8 @@
       html[data-season="christmas"] .hero > .wrap { width: min(1280px, calc(100% - 64px)); }
       html[data-season="christmas"] main > section.section { position: relative; }
       html[data-season="christmas"] main > section.section:not(.hero)::after { content: "✦"; position: absolute; top: 26px; right: 7%; color: rgba(216,181,108,.48); font-size: 1.1rem; pointer-events: none; text-shadow: 0 0 18px rgba(216,181,108,.55); }
-      html[data-season="christmas"] header, html[data-season="christmas"] main, html[data-season="christmas"] footer { position: relative; z-index: 1; }
+      html[data-season="christmas"] header { position: relative; z-index: 30; }
+      html[data-season="christmas"] main, html[data-season="christmas"] footer { position: relative; z-index: 1; }
       html[data-season="christmas"] .hero::before { opacity: .62; }
       html[data-season="christmas"] .hero .eyebrow { color: var(--season-gold); }
       html[data-season="christmas"] .season-snow { display: block; }
@@ -243,13 +244,19 @@
         .nav { min-height: 68px; }
         .brand img { width: 220px; max-width: 68vw; max-height: 38px; }
         .menu-toggle { display: block; }
-        .nav-links { position: absolute; display: none; left: 16px; right: 16px; top: 76px; flex-direction: column; align-items: stretch; gap: 0; padding: 12px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
-        .nav-links.is-open { display: flex; }
+        header .nav { position: relative; z-index: 31; }
+        .nav-links { position: absolute; display: none !important; visibility: hidden; opacity: 0; left: 16px; right: 16px; top: 76px; flex-direction: column; align-items: stretch; gap: 0; padding: 12px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); transform: translateY(-8px); transition: opacity .18s ease, transform .18s ease, visibility .18s ease; z-index: 32; }
+        .nav-links.is-open { display: flex !important; visibility: visible; opacity: 1; pointer-events: auto; transform: translateY(0); }
         .nav-links a { padding: 12px; }
         .nav-links .btn { margin-top: 6px; }
         .hero { padding: 55px 0 64px; }
         .hero-grid, .welcome-grid, .pastor-grid, .sermon-layout, .worship-grid { grid-template-columns: 1fr; gap: 32px; }
         .hero-art { width: 100%; max-width: 480px; justify-self: center; }
+        html[data-season="christmas"] .hero { padding: 42px 0 48px; }
+        html[data-season="christmas"] .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+        html[data-season="christmas"] .hero-grid > div:first-child { width: 100%; }
+        html[data-season="christmas"] .hero-copy, html[data-season="christmas"] .hero-verse { max-width: 100%; }
+        html[data-season="christmas"] .hero-art { width: 100%; max-width: none; justify-self: stretch; }
         .section-heading { display: block; }
         .section-heading p { margin-top: 15px; }
         .notice, .community-grid { grid-template-columns: 1fr; }
@@ -382,16 +389,19 @@
     <script>
       const toggle = document.querySelector('.menu-toggle');
       const nav = document.querySelector('#site-nav');
+      nav.setAttribute('aria-hidden', 'true');
       toggle.addEventListener('click', () => {
         const open = nav.classList.toggle('is-open');
         toggle.setAttribute('aria-expanded', String(open));
         toggle.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+        nav.setAttribute('aria-hidden', String(!open));
         toggle.textContent = open ? '×' : '☰';
       });
       nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
         nav.classList.remove('is-open');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.setAttribute('aria-label', '메뉴 열기');
+        nav.setAttribute('aria-hidden', 'true');
         toggle.textContent = '☰';
       }));
       document.querySelector('#year').textContent = new Date().getFullYear();
