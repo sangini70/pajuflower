@@ -95,6 +95,7 @@ const readPublicFiles = async () => {
     'bulletins/2026-10-12/index.html',
     'bulletins/2026-11-08/index.html',
     'bulletins/2026-11-22/index.html',
+    'bulletins/2026-11-15/index.html',
     'sitemap.xml',
     'robots.txt'
   ];
@@ -187,6 +188,21 @@ try {
   assert.equal((latestSermonHtml.match(/sermon-manuscript-section\"><h2>[^<]+<\/h2><p>/g) || []).length, 3);
   assert.match(latestSermonHtml, /이번 수능을 통해 정직한 시험과 문화가 대한민국 사회에 바로 세워지길 소원합니다\./);
   assert.match(publicFiles['bulletins/2026-11-22/index.html'], /bulletin-table-columns-4 bulletin-table-leading-marker/);
+  const baselineBulletinHtml = publicFiles['bulletins/2026-11-15/index.html'];
+  const latestBulletinHtml = publicFiles['bulletins/2026-11-22/index.html'];
+  assert.match(baselineBulletinHtml, /bulletin-block-sunday-worship/);
+  assert.match(latestBulletinHtml, /bulletin-block-sunday-worship/);
+  assert.match(baselineBulletinHtml, /bulletin-table-leading-marker/);
+  assert.match(latestBulletinHtml, /bulletin-table-leading-marker/);
+  assert.doesNotMatch(latestBulletinHtml, /<span>표시<\/span><span>순서<\/span>/);
+  assert.match(latestBulletinHtml, /<h2>교회 소식<\/h2>/);
+  assert.match(latestBulletinHtml, /<h2>주일낮예배<\/h2>/);
+  assert.match(latestBulletinHtml, /오후 3:30/);
+  assert.match(latestBulletinHtml, /인도 담임목사/);
+  assert.match(latestBulletinHtml, /하나님은 영이시니/);
+  assert.match(latestBulletinHtml, /<h2>주일학교 오전 9:30<\/h2>/);
+  assert.match(latestBulletinHtml, /<span>날짜<\/span><span>기도자<\/span><span>헌금위원<\/span>/);
+  assert.match(latestBulletinHtml, /<span>성경말씀<\/span><span>하브루타 성경읽기<\/span>/);
   assert.ok(latestVideoId && publicFiles['index.html'].includes(`youtube-nocookie.com/embed/${latestVideoId}`));
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /CreativeWork/);

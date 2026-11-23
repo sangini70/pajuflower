@@ -32,12 +32,43 @@ const editionSourcePaths = (section, index) => {
 
 const createWebEditionDocument = (bulletin, sermon) => {
   const edition = bulletin.webEdition;
-  const blocks = edition.sections
+  const rawSections = edition.sections
     .filter(isApproved)
-    .sort((a, b) => a.sourcePage - b.sourcePage || a.sourceOrder - b.sourceOrder)
+    .sort((a, b) => a.sourcePage - b.sourcePage || a.sourceOrder - b.sourceOrder);
+  const sundaySchool = rawSections.find((section) => section.id === 'sunday-school');
+  const sundaySchedule = rawSections.find((section) => section.id === 'sunday-schedule');
+  const normalizedSections = rawSections.map((section) => {
+    if (section.id === 'sunday-school' && sundaySchedule) {
+      return {
+        ...section,
+        title: section.title || '주일학교 오전 9:30',
+        subtitle: section.subtitle || '오전 9:30 / 최민솔 전도사',
+        columns: sundaySchedule.columns,
+        rows: sundaySchedule.rows,
+        sourcePaths: [
+          ...editionSourcePaths(section, edition.sections.indexOf(section)),
+          ...editionSourcePaths(sundaySchedule, edition.sections.indexOf(sundaySchedule))
+        ]
+      };
+    }
+    if (section.id === 'sunday-schedule' && sundaySchool) {
+      return {
+        ...section,
+        title: '',
+        columns: undefined,
+        rows: sundaySchool.rows,
+        sourcePaths: [
+          ...editionSourcePaths(section, edition.sections.indexOf(section)),
+          ...editionSourcePaths(sundaySchool, edition.sections.indexOf(sundaySchool))
+        ]
+      };
+    }
+    return section;
+  });
+  const blocks = normalizedSections
     .map((section) => ({
       ...section,
-      sourcePaths: editionSourcePaths(section, bulletin.webEdition.sections.indexOf(section)),
+      sourcePaths: section.sourcePaths || editionSourcePaths(section, bulletin.webEdition.sections.indexOf(section)),
       approvalState: 'published-approved',
       preferredFormat: section.type,
       splittable: ['table', 'numbered-list', 'text-list'].includes(section.type)
@@ -99,7 +130,11 @@ const renderNews = (block) => compactList(block.items, (item) => `<strong>${esca
 const renderSchedule = (block) => table(['날짜', '기도', '특송'], block.items.map((item) => [item.date, item.prayer, item.specialSong]));
 const renderTextList = (block) => compactList(block.items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`);
 const renderCover = (block) => `<header class="bulletin-identity"><h1>${escapeHtml(block.churchName)}</h1><p>${escapeHtml(block.issueNumber)}</p><p>${escapeHtml(block.establishedDate)}</p><p>${escapeHtml(block.date)}</p><p>${escapeHtml(block.proclamation)}</p><p>${escapeHtml(block.verse)} ${escapeHtml(block.verseReference)}</p></header>`;
-const renderEditionTable = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${table(block.columns, block.rows, block.leadingMarker || block.rows?.some((row) => row?.[0] === '*'))}`;
+const renderEditionTable = (block) => {
+  const hasMarker = block.leadingMarker || block.rows?.some((row) => row?.[0] === '*');
+  const columns = noHeaderTableBlocks.has(block.id) ? undefined : block.columns;
+  return `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${(block.facts || []).map((fact) => `<p>${escapeHtml(fact)}</p>`).join('')}${table(columns, block.rows, hasMarker)}`;
+};
 const numberedItemParts = (item, index) => {
   if (Array.isArray(item)) return { number: item[0] ?? String(index + 1), lines: item.slice(1) };
   if (typeof item === 'string') return { number: String(index + 1), lines: [item] };
@@ -110,6 +145,23 @@ const renderEditionTextList = (block) => compactList(block.items, (item) => `<sp
 const renderArticle = (block) => `${(block.paragraphs || []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}${(block.subsections || []).map((subsection) => `<section><h3>${escapeHtml(subsection.title)}</h3>${subsection.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}${block.conclusion ? `<p>${escapeHtml(block.conclusion)}</p>` : ''}`;
 const renderVerse = (block) => `<p>${escapeHtml(block.text)}</p><p>${escapeHtml(block.reference)}</p>`;
 const renderService = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${(block.facts || []).map((fact) => `<p>${escapeHtml(fact)}</p>`).join('')}${table(block.columns, block.rows, block.leadingMarker || block.rows?.some((row) => row?.[0] === '*'))}${block.footnote ? `<p>${escapeHtml(block.footnote)}</p>` : ''}`;
+const defaultSectionTitles = {
+  'church-news': '교회 소식',
+  'worship-schedule': '교회 행사와 예배 기도자, 특송',
+  'prayer-topics': '<파주꽃동산교회의 기도제목>',
+  'faith-guide': '<신앙생활을 위한 10가지 믿음의 행동>',
+  'memory-verse': '이번 주 말씀 암송',
+  'missionary-public': '우리가 섬기는 선교사',
+  'sunday-worship': '주일낮예배',
+  'next-week-volunteers': '다음 주 봉사자',
+  'sunday-school': '주일학교 오전 9:30',
+  'sunday-schedule': '',
+  'middle-school-study': '중고등부 성경공부 모임',
+  'wednesday-prayer': '수요 기도회',
+  'friday-prayer': '금요 기도회',
+  'dawn-prayer': '새벽 기도회 (월-금)'
+};
+const noHeaderTableBlocks = new Set(['sunday-worship', 'next-week-volunteers', 'sunday-schedule']);
 
 const renderBlock = (block) => {
   const renderer = {
@@ -118,7 +170,8 @@ const renderBlock = (block) => {
   }[block.type];
   if (!renderer) throw new Error(`Unsupported bulletin block type: ${block.type}`);
   const content = renderer(block);
-  return block.type === 'cover' || block.type === 'metadata' ? `<div class="bulletin-block-${block.id.replaceAll('.', '-')}">${content}</div>` : section(block.title, content, block.id);
+  const title = block.title || defaultSectionTitles[block.id] || '';
+  return block.type === 'cover' || block.type === 'metadata' ? `<div class="bulletin-block-${block.id.replaceAll('.', '-')}">${content}</div>` : section(title, content, block.id);
 };
 
 export const renderBulletinDocument = (document) => {
