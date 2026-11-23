@@ -90,9 +90,11 @@ const readPublicFiles = async () => {
     'sermons/index.html',
     'sermons/e2e-test-only-sermon-2026-10-12/index.html',
     'sermons/2026-11-08/index.html',
+    'sermons/2026-11-22/index.html',
     'bulletins/index.html',
     'bulletins/2026-10-12/index.html',
     'bulletins/2026-11-08/index.html',
+    'bulletins/2026-11-22/index.html',
     'sitemap.xml',
     'robots.txt'
   ];
@@ -180,6 +182,11 @@ try {
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /youtube-nocookie\.com\/embed\/E2ETest1234/);
   assert.match(publicFiles['sermons/e2e-test-only-sermon-2026-10-12/index.html'], /유튜브에서 보기/);
+  const latestSermonHtml = publicFiles['sermons/2026-11-22/index.html'];
+  assert.equal((latestSermonHtml.match(/<h2>/g) || []).length, 3);
+  assert.equal((latestSermonHtml.match(/sermon-manuscript-section\"><h2>[^<]+<\/h2><p>/g) || []).length, 3);
+  assert.match(latestSermonHtml, /이번 수능을 통해 정직한 시험과 문화가 대한민국 사회에 바로 세워지길 소원합니다\./);
+  assert.match(publicFiles['bulletins/2026-11-22/index.html'], /bulletin-table-columns-4 bulletin-table-leading-marker/);
   assert.ok(latestVideoId && publicFiles['index.html'].includes(`youtube-nocookie.com/embed/${latestVideoId}`));
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /BreadcrumbList/);
   assert.match(publicFiles['bulletins/2026-10-12/index.html'], /CreativeWork/);

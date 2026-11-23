@@ -99,7 +99,7 @@ const renderNews = (block) => compactList(block.items, (item) => `<strong>${esca
 const renderSchedule = (block) => table(['날짜', '기도', '특송'], block.items.map((item) => [item.date, item.prayer, item.specialSong]));
 const renderTextList = (block) => compactList(block.items, (item) => `<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.description)}</span>`);
 const renderCover = (block) => `<header class="bulletin-identity"><h1>${escapeHtml(block.churchName)}</h1><p>${escapeHtml(block.issueNumber)}</p><p>${escapeHtml(block.establishedDate)}</p><p>${escapeHtml(block.date)}</p><p>${escapeHtml(block.proclamation)}</p><p>${escapeHtml(block.verse)} ${escapeHtml(block.verseReference)}</p></header>`;
-const renderEditionTable = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${table(block.columns, block.rows)}`;
+const renderEditionTable = (block) => `${block.subtitle ? `<p>${escapeHtml(block.subtitle)}</p>` : ''}${table(block.columns, block.rows, block.leadingMarker || block.rows?.some((row) => row?.[0] === '*'))}`;
 const numberedItemParts = (item, index) => {
   if (Array.isArray(item)) return { number: item[0] ?? String(index + 1), lines: item.slice(1) };
   if (typeof item === 'string') return { number: String(index + 1), lines: [item] };
